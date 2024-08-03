@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
@@ -13,12 +13,34 @@ type Props = {
 };
 
 const horarios = ['12:00 PM', '3:00 PM', '6:00 PM', '9:00 PM'];
+const maxTickets = 10;
 
 const MovieDetailScreen: React.FC<Props> = ({ route, navigation }) => {
   const { title, image, description } = route.params;
+  const [selectedHorario, setSelectedHorario] = useState<string | null>(null);
+  const [tickets, setTickets] = useState<number>(1);
+
+  const handleHorarioPress = (horario: string) => {
+    setSelectedHorario(horario);
+  };
+
+  const handleTicketChange = (change: number) => {
+    setTickets(prev => {
+      const newTickets = prev + change;
+      return newTickets > 0 && newTickets <= maxTickets ? newTickets : prev;
+    });
+  };
+
+  const handleNext = () => {
+    if (selectedHorario) {
+      navigation.navigate('SeatSelection', { title, horario: selectedHorario, tickets });
+    } else {
+      alert('Por favor, seleccione un horario.');
+    }
+  };
 
   const renderHorario = (horario: string) => (
-    <TouchableOpacity key={horario} style={styles.horarioButton}>
+    <TouchableOpacity key={horario} style={[styles.horarioButton, selectedHorario === horario && styles.selectedHorarioButton]} onPress={() => handleHorarioPress(horario)}>
       <Text style={styles.horarioButtonText}>{horario}</Text>
     </TouchableOpacity>
   );
@@ -32,6 +54,19 @@ const MovieDetailScreen: React.FC<Props> = ({ route, navigation }) => {
       <View style={styles.horariosContainer}>
         {horarios.map(renderHorario)}
       </View>
+      <Text style={styles.subtitle}>Seleccione el número de boletos</Text>
+      <View style={styles.ticketContainer}>
+        <TouchableOpacity style={styles.ticketButton} onPress={() => handleTicketChange(-1)}>
+          <Text style={styles.ticketButtonText}>-</Text>
+        </TouchableOpacity>
+        <Text style={styles.ticketCount}>{tickets}</Text>
+        <TouchableOpacity style={styles.ticketButton} onPress={() => handleTicketChange(1)}>
+          <Text style={styles.ticketButtonText}>+</Text>
+        </TouchableOpacity>
+      </View>
+      <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
+        <Text style={styles.nextButtonText}>Siguiente</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 };
@@ -77,7 +112,40 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     margin: 5,
   },
+  selectedHorarioButton: {
+    backgroundColor: '#A00000',
+  },
   horarioButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+  },
+  ticketContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+  ticketButton: {
+    backgroundColor: '#E50914',
+    padding: 10,
+    borderRadius: 5,
+    marginHorizontal: 10,
+  },
+  ticketButtonText: {
+    color: '#FFFFFF',
+    fontSize: 20,
+  },
+  ticketCount: {
+    fontSize: 20,
+    color: '#FFFFFF',
+  },
+  nextButton: {
+    backgroundColor: '#E50914',
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    marginTop: 20,
+  },
+  nextButtonText: {
     color: '#FFFFFF',
     fontSize: 16,
   },

@@ -51,6 +51,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
       <Button
         title="Iniciar sesión"
         buttonStyle={styles.button}
+        titleStyle={styles.buttonText} // Ajustar estilo del texto del botón
         onPress={handleLogin}
       />
       <Text style={styles.footerText}>
@@ -97,6 +98,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#E50914',
     width: '100%',
     paddingVertical: 15,
+    alignItems: 'center', // Asegurar que el contenido esté centrado
+    justifyContent: 'center', // Asegurar que el contenido esté centrado
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+    right: 60,
+    
   },
   footerText: {
     marginTop: 20,
