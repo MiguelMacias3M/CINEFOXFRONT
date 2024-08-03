@@ -22,7 +22,11 @@ const AppNavigator = () => {
         <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Cartelera" component={CarteleraScreen} />
-        <Stack.Screen name="MovieDetail" component={MovieDetailScreen} />
+        <Stack.Screen 
+          name="MovieDetail" 
+          component={MovieDetailScreen} 
+          options={{ title: 'Detalles de la película' }} // Actualizar título aquí
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
