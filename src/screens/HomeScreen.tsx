@@ -10,24 +10,24 @@ type Props = {
 };
 
 const peliculas = [
-  { title: 'Star Wars', image: require('../assets/avengers.jpg') },
-  { title: 'Avatar', image: require('../assets/intensamente.jpg') },
-  { title: 'El Cadaver de la Novia', image: require('../assets/ironman.jpg') },
-  { title: 'Ironman', image: require('../assets/ironman.jpg') },
-  { title: 'Los Increíbles 2', image: require('../assets/quabtumania.jpg') },
-  { title: 'Ted', image: require('../assets/quabtumania.jpg') },
+  { title: 'Wolverine', image: require('../assets/deadpool.jpg') },
+  { title: 'Intensamente 2', image: require('../assets/intensamente.jpg') },
+  { title: 'Mi villano favorito', image: require('../assets/mivillanofavorito.jpg') },
+  { title: 'Exorcismo', image: require('../assets/exorsismo.jpg') },
+  { title: 'Tornados', image: require('../assets/tornados.jpg') },
+  { title: 'Ted', image: require('../assets/harold.jpg') },
 ];
 
 const proximosEstrenos = [
-  { title: 'Black Widow', image: require('../assets/intensamente.jpg') },
-  { title: 'Eternals', image: require('../assets/intensamente.jpg') },
-  { title: 'Shang-Chi', image: require('../assets/intensamente.jpg') },
+  { title: 'Borderlands', image: require('../assets/borderlands.jpg') },
+  { title: 'Romper el circulo', image: require('../assets/rompercirculo.jpg') },
+  { title: 'Candidato Honesto', image: require('../assets/cantidatohonesto.jpg') },
 ];
 
 const recomendaciones = [
-  { title: 'Inception', image: require('../assets/intensamente.jpg') },
-  { title: 'Interstellar', image: require('../assets/intensamente.jpg') },
-  { title: 'The Dark Knight', image: require('../assets/intensamente.jpg') },
+  { title: 'Inception', image: require('../assets/elcadavernovia.jpeg') },
+  { title: 'Intensamente', image: require('../assets/intensamente.jpg') },
+  { title: 'Wolverine', image: require('../assets/deadpool.jpg') },
 ];
 
 const HomeScreen: React.FC<Props> = ({ navigation }) => {
@@ -84,7 +84,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
 
       <View style={styles.footer}>
         <Text style={styles.footerText}>Cine-Fox Cinema</Text>
-        <Text style={styles.footerText}>Dirección: Calle Falsa 123, Ciudad, País</Text>
+        <Text style={styles.footerText}>Dirección: Calle La Nueba #123, Aguascalientes, México</Text>
         <Text style={styles.footerText}>Teléfono: +1 234 567 890</Text>
         <Text style={styles.footerText}>Email: contacto@cinefox.com</Text>
       </View>

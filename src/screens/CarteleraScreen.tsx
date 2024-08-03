@@ -1,52 +1,138 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, FlatList } from 'react-native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '../navigation/AppNavigator';
+
+type CarteleraScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Cartelera'>;
+
+type Props = {
+  navigation: CarteleraScreenNavigationProp;
+};
 
 const estrenos = {
   Lunes: [
     {
-      title: 'Star Wars',
-      image: require('../assets/avengers.jpg'),
-      description: 'Una galaxia muy, muy lejana...',
+      title: 'Deadpool & Wolverine',
+      image: require('../assets/deadpool.jpg'),
+      description: 'Tu super heroe esta devuelta...',
     },
     {
-      title: 'Avatar',
+      title: 'Intensamente',
       image: require('../assets/intensamente.jpg'),
-      description: 'Explora el mundo de Pandora...',
+      description: 'Explora tu emociones...',
+    },
+    {
+      title: 'Mi villano favorito 4',
+      image: require('../assets/mivillanofavorito.jpg'),
+      description: 'Tu villano favorito volvio!!!',
+    },
+    {
+      title: 'Harold y su lapiz magico',
+      image: require('../assets/harold.jpg'),
+      description: 'Harol trasa tu mundo...',
     },
   ],
   Martes: [
     {
       title: 'El Cadaver de la Novia',
-      image: require('../assets/ironman.jpg'),
+      image: require('../assets/elcadavernovia.jpeg'),
       description: 'Una historia de amor más allá de la muerte...',
     },
     {
-      title: 'Ironman',
-      image: require('../assets/ironman.jpg'),
-      description: 'El héroe de hierro...',
+      title: 'Deadpool & Wolverine',
+      image: require('../assets/deadpool.jpg'),
+      description: 'Tu super heroe esta devuelta...',
+    },
+    {
+      title: 'Harold y su lapiz magico',
+      image: require('../assets/harold.jpg'),
+      description: 'Harol trasa tu mundo...',
     },
   ],
   Miércoles: [
     {
-      title: 'Los Increíbles 2',
-      image: require('../assets/quabtumania.jpg'),
-      description: 'La familia de superhéroes regresa...',
+      title: 'Mi villano favorito 4',
+      image: require('../assets/mivillanofavorito.jpg'),
+      description: 'Tu villano favorito volvio!!!',
     },
     {
-      title: 'Ted',
+      title: 'Quabtumania',
       image: require('../assets/quabtumania.jpg'),
-      description: 'La historia del oso de peluche más irreverente...',
+      description: 'El agua en su explendor de ...',
     },
   ],
-  Jueves: [],
-  Viernes: [],
-  Sábado: [],
+  Jueves: [
+    {
+      title: 'Deadpool & Wolverine',
+      image: require('../assets/deadpool.jpg'),
+      description: 'Tu super heroe esta devuelta...',
+    },
+    {
+      title: 'Intensamente',
+      image: require('../assets/intensamente.jpg'),
+      description: 'Explora tu emociones...',
+    },
+    {
+      title: 'Mi villano favorito 4',
+      image: require('../assets/mivillanofavorito.jpg'),
+      description: 'Tu villano favorito volvio!!!',
+    },
+    {
+      title: 'Harold y su lapiz magico',
+      image: require('../assets/harold.jpg'),
+      description: 'Harol trasa tu mundo...',
+    },
+  ],
+  Viernes: [
+    {
+      title: 'Deadpool & Wolverine',
+      image: require('../assets/deadpool.jpg'),
+      description: 'Tu super heroe esta devuelta...',
+    },
+    {
+      title: 'Intensamente',
+      image: require('../assets/intensamente.jpg'),
+      description: 'Explora tu emociones...',
+    },
+    {
+      title: 'Mi villano favorito 4',
+      image: require('../assets/mivillanofavorito.jpg'),
+      description: 'Tu villano favorito volvio!!!',
+    },
+    {
+      title: 'Harold y su lapiz magico',
+      image: require('../assets/harold.jpg'),
+      description: 'Harol trasa tu mundo...',
+    },
+  ],
+  Sábado: [
+    {
+      title: 'Deadpool & Wolverine',
+      image: require('../assets/deadpool.jpg'),
+      description: 'Tu super heroe esta devuelta...',
+    },
+    {
+      title: 'Intensamente',
+      image: require('../assets/intensamente.jpg'),
+      description: 'Explora tu emociones...',
+    },
+    {
+      title: 'Mi villano favorito 4',
+      image: require('../assets/mivillanofavorito.jpg'),
+      description: 'Tu villano favorito volvio!!!',
+    },
+    {
+      title: 'Harold y su lapiz magico',
+      image: require('../assets/harold.jpg'),
+      description: 'Harol trasa tu mundo...',
+    },
+  ],
   Domingo: [],
 };
 
 const daysOfWeek = Object.keys(estrenos);
 
-const CarteleraScreen: React.FC = () => {
+const CarteleraScreen: React.FC<Props> = ({ navigation }) => {
   const [selectedDay, setSelectedDay] = useState<string>(daysOfWeek[0]);
 
   const renderDayItem = ({ item }) => (
@@ -54,6 +140,22 @@ const CarteleraScreen: React.FC = () => {
       <Text style={[styles.submenuItem, selectedDay === item && styles.selectedSubmenuItem]}>
         {item}
       </Text>
+    </TouchableOpacity>
+  );
+
+  const handlePressMovie = (movie) => {
+    navigation.navigate('MovieDetail', movie);
+  };
+
+  const renderMovieItem = (movie, index) => (
+    <TouchableOpacity key={index} onPress={() => handlePressMovie(movie)}>
+      <View style={styles.card}>
+        <Image source={movie.image} style={styles.movieImage} />
+        <View style={styles.movieInfo}>
+          <Text style={styles.movieTitle}>{movie.title}</Text>
+          <Text style={styles.movieDescription}>{movie.description}</Text>
+        </View>
+      </View>
     </TouchableOpacity>
   );
 
@@ -71,15 +173,7 @@ const CarteleraScreen: React.FC = () => {
       <Text style={styles.subtitle}>Estrenos de {selectedDay}</Text>
       <View style={styles.moviesContainer}>
         {estrenos[selectedDay] && estrenos[selectedDay].length > 0 ? (
-          estrenos[selectedDay].map((estreno, index) => (
-            <View key={index} style={styles.card}>
-              <Image source={estreno.image} style={styles.movieImage} />
-              <View style={styles.movieInfo}>
-                <Text style={styles.movieTitle}>{estreno.title}</Text>
-                <Text style={styles.movieDescription}>{estreno.description}</Text>
-              </View>
-            </View>
-          ))
+          estrenos[selectedDay].map(renderMovieItem)
         ) : (
           <Text style={styles.noMoviesText}>No hay estrenos para este día.</Text>
         )}
