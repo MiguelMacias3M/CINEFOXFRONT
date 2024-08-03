@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Modal } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/AppNavigator';
@@ -15,6 +15,7 @@ type Props = {
 const SeatSelectionScreen: React.FC<Props> = ({ route, navigation }) => {
   const { title, horario, tickets } = route.params;
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
+  const [modalVisible, setModalVisible] = useState(false);
 
   const seats = [
     'A-1', 'A-2', 'A-3', 'A-4', 'A-5',
@@ -42,31 +43,75 @@ const SeatSelectionScreen: React.FC<Props> = ({ route, navigation }) => {
     }
   };
 
+  const handleConfirm = () => {
+    setModalVisible(true);
+  };
+
+  const handleProceedToPayment = () => {
+    setModalVisible(false);
+    navigation.navigate('Payment', { title, horario, tickets, seats: selectedSeats, price: tickets * 80 });
+  };
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Image source={require('../assets/logo.png')} style={styles.logo} />
       <Text style={styles.title}>Seleccione sus asientos</Text>
+      <View style={styles.screenLabelContainer}>
+        <Text style={styles.screenLabel}>Pantalla</Text>
+      </View>
       <View style={styles.seatContainer}>
         {seats.map(seat => (
-          <TouchableOpacity
-            key={seat}
-            style={[styles.seat, selectedSeats.includes(seat) && styles.selectedSeat]}
-            onPress={() => toggleSeatSelection(seat)}
-          >
-            <Text style={styles.seatText}>{seat}</Text>
-          </TouchableOpacity>
+          <View key={seat} style={styles.seatWrapper}>
+            <TouchableOpacity
+              style={styles.seat}
+              onPress={() => toggleSeatSelection(seat)}
+            >
+              <Image
+                source={selectedSeats.includes(seat) ? require('../assets/asientoRojo.png') : require('../assets/asientoBlanco.png')}
+                style={styles.seatImage}
+              />
+            </TouchableOpacity>
+            <Text style={styles.seatLabel}>{seat}</Text>
+          </View>
         ))}
       </View>
       <Text style={styles.selectedSeatsText}>Asientos seleccionados: {selectedSeats.length}/{tickets}</Text>
       <Text style={styles.selectedSeatsList}>Asientos: {selectedSeats.join(', ')}</Text>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={() => {/* Lógica para confirmar la selección */}}>
+        <TouchableOpacity style={styles.button} onPress={handleConfirm}>
           <Text style={styles.buttonText}>Confirmar</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
           <Text style={styles.buttonText}>Cancelar</Text>
         </TouchableOpacity>
       </View>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Resumen de la Venta</Text>
+            <Text style={styles.modalText}>Pelicula: {title}</Text>
+            <Text style={styles.modalText}>Horario: {horario}</Text>
+            <Text style={styles.modalText}>Número de boletos: {tickets}</Text>
+            <Text style={styles.modalText}>Asientos: {selectedSeats.join(', ')}</Text>
+            <Text style={styles.modalText}>Precio total: ${tickets * 80}</Text>
+            <View style={styles.modalButtonContainer}>
+              <TouchableOpacity style={styles.modalButton} onPress={handleProceedToPayment}>
+                <Text style={styles.modalButtonText}>Ir a Pago</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.modalButton} onPress={() => setModalVisible(false)}>
+                <Text style={styles.modalButtonText}>Cancelar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 };
@@ -79,8 +124,9 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   logo: {
-    width: 50,
-    height: 50,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
     marginBottom: 20,
   },
   title: {
@@ -89,24 +135,39 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     marginBottom: 20,
   },
+  screenLabelContainer: {
+    marginBottom: 20,
+  },
+  screenLabel: {
+    fontSize: 18,
+    color: '#FFFFFF',
+    textAlign: 'center',
+  },
   seatContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
   },
+  seatWrapper: {
+    alignItems: 'center',
+    margin: 5,
+  },
   seat: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#2D3E50',
     borderRadius: 5,
     padding: 10,
-    margin: 5,
     width: 40,
     alignItems: 'center',
+    justifyContent: 'center',
   },
-  selectedSeat: {
-    backgroundColor: '#E50914',
+  seatImage: {
+    width: 30,
+    height: 30,
   },
-  seatText: {
-    color: '#2D3E50',
+  seatLabel: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    marginTop: 5,
   },
   selectedSeatsText: {
     fontSize: 16,
@@ -131,6 +192,44 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
   },
   buttonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    width: '80%',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  modalText: {
+    fontSize: 16,
+    marginBottom: 10,
+  },
+  modalButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 20,
+  },
+  modalButton: {
+    backgroundColor: '#E50914',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    marginHorizontal: 10,
+  },
+  modalButtonText: {
     color: '#FFFFFF',
     fontSize: 16,
   },

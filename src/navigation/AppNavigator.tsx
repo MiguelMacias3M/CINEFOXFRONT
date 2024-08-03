@@ -1,31 +1,34 @@
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import LoginScreen from '../screens/LoginScreen';
+import { NavigationContainer } from '@react-navigation/native';
 import HomeScreen from '../screens/HomeScreen';
 import CarteleraScreen from '../screens/CarteleraScreen';
 import MovieDetailScreen from '../screens/MovieDetailScreen';
-import SeatSelectionScreen from '../screens/SeatSelectionScreen'; // Importa la nueva pantalla
+import SeatSelectionScreen from '../screens/SeatSelectionScreen';
+import PaymentScreen from '../screens/PaymentScreen';
+import LoginScreen from '../screens/LoginScreen';
 
 export type RootStackParamList = {
-  Login: undefined;
   Home: undefined;
   Cartelera: undefined;
   MovieDetail: { title: string; image: any; description: string };
-  SeatSelection: { title: string; horario: string }; // Añade los parámetros necesarios
+  SeatSelection: { title: string; horario: string; tickets: number };
+  Payment: { title: string; horario: string; tickets: number; seats: string[]; price: number };
+  Login: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
 
-const AppNavigator = () => {
+const AppNavigator: React.FC = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Login">
-        <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Cartelera" component={CarteleraScreen} />
-        <Stack.Screen name="MovieDetail" component={MovieDetailScreen} options={{ title: 'Detalles de la película' }} />
-        <Stack.Screen name="SeatSelection" component={SeatSelectionScreen} options={{ title: 'Seleccione sus asientos' }} />
+        <Stack.Screen name="MovieDetail" component={MovieDetailScreen} />
+        <Stack.Screen name="SeatSelection" component={SeatSelectionScreen} />
+        <Stack.Screen name="Payment" component={PaymentScreen} />
+        <Stack.Screen name="Login" component={LoginScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
