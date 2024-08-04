@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Image, ScrollView } from 'react-native';
+import { View, StyleSheet, Image, ScrollView, Alert } from 'react-native';
 import { Input, Button, Text } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
+import { loginUsuario } from '../apiService';
+import { useNavigation } from '@react-navigation/native';
 
 type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>;
 
@@ -11,16 +13,22 @@ type Props = {
   navigation: LoginScreenNavigationProp;
 };
 
-const LoginScreen: React.FC<Props> = ({ navigation }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+const LoginScreen = () => {
+  const [correoUsuario, setCorreoUsuario] = useState('');
+  const [contrasenaUsuario, setContrasenaUsuario] = useState('');
+  const navigation = useNavigation<LoginScreenNavigationProp>();
 
-  const handleLogin = () => {
-    // Aquí puedes manejar la lógica de autenticación
-    console.log('Email:', email);
-    console.log('Password:', password);
-    // Navegar a otra pantalla después del inicio de sesión exitoso
-    navigation.navigate('Home');
+  const handleLogin = async () => {
+    try {
+      const data = await loginUsuario(correoUsuario, contrasenaUsuario);
+      console.log('Datos del usuario:', data);
+
+      navigation.navigate('Home');
+    } catch (error) {
+      console.error('Error al iniciar sesión:', error);
+
+      Alert.alert('Error', 'Usuario o contraseña incorrectos');
+    }
   };
 
   return (
@@ -32,8 +40,8 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
       <Input
         placeholder="Correo electrónico"
         leftIcon={<Icon name="envelope" size={20} color="#E50914" />}
-        value={email}
-        onChangeText={setEmail}
+        value={correoUsuario}
+        onChangeText={setCorreoUsuario}
         containerStyle={styles.inputContainer}
         inputStyle={styles.input}
         keyboardType="email-address"
@@ -42,8 +50,8 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
       <Input
         placeholder="Contraseña"
         leftIcon={<Icon name="lock" size={24} color="#E50914" />}
-        value={password}
-        onChangeText={setPassword}
+        value={contrasenaUsuario}
+        onChangeText={setContrasenaUsuario}
         containerStyle={styles.inputContainer}
         inputStyle={styles.input}
         secureTextEntry
@@ -51,7 +59,6 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
       <Button
         title="Iniciar sesión"
         buttonStyle={styles.button}
-        titleStyle={styles.buttonText} // Ajustar estilo del texto del botón
         onPress={handleLogin}
       />
       <Text style={styles.footerText}>
