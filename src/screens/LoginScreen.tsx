@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, Image, ScrollView } from 'react-native';
 import { Input, Button, Text } from 'react-native-elements';
-import Icon from 'react-native-vector-icons/FontAwesome';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
 
@@ -31,7 +30,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
       <Text style={styles.title}>Bienvenido a CINE-FOX</Text>
       <Input
         placeholder="Correo electrónico"
-        leftIcon={<Icon name="envelope" size={20} color="#E50914" />}
+        leftIcon={<Image source={require('../assets/icons/correo.png')} style={styles.icon} />}
         value={email}
         onChangeText={setEmail}
         containerStyle={styles.inputContainer}
@@ -41,7 +40,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
       />
       <Input
         placeholder="Contraseña"
-        leftIcon={<Icon name="lock" size={24} color="#E50914" />}
+        leftIcon={<Image source={require('../assets/icons/password.png')} style={styles.icon} />}
         value={password}
         onChangeText={setPassword}
         containerStyle={styles.inputContainer}
@@ -51,11 +50,14 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
       <Button
         title="Iniciar sesión"
         buttonStyle={styles.button}
-        titleStyle={styles.buttonText} // Ajustar estilo del texto del botón
+        titleStyle={styles.buttonText}
         onPress={handleLogin}
       />
       <Text style={styles.footerText}>
-        ¿No tienes una cuenta? <Text style={styles.footerLink}>Regístrate</Text>
+        ¿No tienes una cuenta?{' '}
+        <Text style={styles.footerLink} onPress={() => navigation.navigate('Register')}>
+          Regístrate
+        </Text>
       </Text>
     </ScrollView>
   );
@@ -94,19 +96,22 @@ const styles = StyleSheet.create({
   input: {
     paddingLeft: 10,
   },
+  icon: {
+    width: 20,
+    height: 20,
+  },
   button: {
     backgroundColor: '#E50914',
     width: '100%',
     paddingVertical: 15,
-    alignItems: 'center', // Asegurar que el contenido esté centrado
-    justifyContent: 'center', // Asegurar que el contenido esté centrado
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   buttonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
     right: 60,
-    
   },
   footerText: {
     marginTop: 20,
