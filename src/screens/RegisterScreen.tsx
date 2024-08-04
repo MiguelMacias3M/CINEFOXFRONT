@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView, Image } from 'react-native';
 import { Input, Button, Text } from 'react-native-elements';
-import Icon from 'react-native-vector-icons/FontAwesome';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
 
@@ -36,7 +35,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
       <Text style={styles.title}>Registro en CINE-FOX</Text>
       <Input
         placeholder="Nombre"
-        leftIcon={<Icon name="user" size={20} color="#E50914" />}
+        leftIcon={<Image source={require('../assets/icons/user.png')} style={styles.icon} />}
         value={name}
         onChangeText={setName}
         containerStyle={styles.inputContainer}
@@ -44,7 +43,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
       />
       <Input
         placeholder="Apellido"
-        leftIcon={<Icon name="user" size={20} color="#E50914" />}
+        leftIcon={<Image source={require('../assets/icons/dobleuser.png')} style={styles.icon} />}
         value={surname}
         onChangeText={setSurname}
         containerStyle={styles.inputContainer}
@@ -52,7 +51,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
       />
       <Input
         placeholder="Edad"
-        leftIcon={<Icon name="calendar" size={20} color="#E50914" />}
+        leftIcon={<Image source={require('../assets/icons/calendar.png')} style={styles.icon} />}
         value={age}
         onChangeText={setAge}
         keyboardType="numeric"
@@ -61,7 +60,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
       />
       <Input
         placeholder="Correo electrónico"
-        leftIcon={<Icon name="envelope" size={20} color="#E50914" />}
+        leftIcon={<Image source={require('../assets/icons/correo.png')} style={styles.icon} />}
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
@@ -71,7 +70,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
       />
       <Input
         placeholder="Teléfono"
-        leftIcon={<Icon name="phone" size={20} color="#E50914" />}
+        leftIcon={<Image source={require('../assets/icons/phone.png')} style={styles.icon} />}
         value={phone}
         onChangeText={setPhone}
         keyboardType="phone-pad"
@@ -80,7 +79,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
       />
       <Input
         placeholder="Contraseña"
-        leftIcon={<Icon name="lock" size={24} color="#E50914" />}
+        leftIcon={<Image source={require('../assets/icons/password.png')} style={styles.icon} />}
         value={password}
         onChangeText={setPassword}
         containerStyle={styles.inputContainer}
@@ -125,6 +124,10 @@ const styles = StyleSheet.create({
   input: {
     paddingLeft: 10,
   },
+  icon: {
+    width: 20,
+    height: 20,
+  },
   button: {
     backgroundColor: '#E50914',
     width: '100%',
@@ -136,7 +139,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
-    right: 60,
+    
   },
   footerText: {
     marginTop: 20,
