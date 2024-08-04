@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, ScrollView, FlatList, TouchableOpacity, Alert } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
+import { logoutUsuario } from '../apiService';
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
 
@@ -37,6 +38,17 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
     </View>
   );
 
+  const handleLogout = async () => {
+    try {
+      await logoutUsuario();
+      Alert.alert('Sesión cerrada', 'Has cerrado sesión correctamente.');
+      navigation.navigate('Login');
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+      Alert.alert('Error', 'Hubo un problema al cerrar sesión.');
+    }
+  };
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.menu}>
@@ -46,6 +58,9 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
         </TouchableOpacity>
         <Text style={styles.menuItem}>Próximos Estrenos</Text>
         <Text style={styles.menuItem}>Contacto</Text>
+        <TouchableOpacity onPress={handleLogout}>
+          <Text style={styles.menuItem}>Cerrar Sesión</Text>
+        </TouchableOpacity>
       </View>
       <View style={styles.header}>
         <Image source={require('../assets/logo.png')} style={styles.logo} />
