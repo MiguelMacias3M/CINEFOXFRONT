@@ -139,7 +139,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
-    
   },
   footerText: {
     marginTop: 20,
