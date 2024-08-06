@@ -7,14 +7,16 @@ import MovieDetailScreen from '../screens/MovieDetailScreen';
 import SeatSelectionScreen from '../screens/SeatSelectionScreen';
 import PaymentScreen from '../screens/PaymentScreen';
 import LoginScreen from '../screens/LoginScreen';
+import RegisterScreen from '../screens/RegisterScreen';
 
 export type RootStackParamList = {
   Home: undefined;
   Cartelera: undefined;
-  MovieDetail: { title: string; image: any; description: string };
+  MovieDetail: { title: string; image: any; description: string; price: number };
   SeatSelection: { title: string; horario: string; tickets: number };
   Payment: { title: string; horario: string; tickets: number; seats: string[]; price: number };
   Login: undefined;
+  Register: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -29,6 +31,7 @@ const AppNavigator: React.FC = () => {
         <Stack.Screen name="SeatSelection" component={SeatSelectionScreen} />
         <Stack.Screen name="Payment" component={PaymentScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="Register" component={RegisterScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
