@@ -1,8 +1,10 @@
+// RegisterScreen.tsx
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, Image } from 'react-native';
+import { View, StyleSheet, ScrollView, Image, Alert } from 'react-native';
 import { Input, Button, Text } from 'react-native-elements';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
+import { registerUsuario } from '../apiService';
 
 type RegisterScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Register'>;
 
@@ -18,16 +20,15 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleRegister = () => {
-    // Aquí puedes manejar la lógica de registro
-    console.log('Nombre:', name);
-    console.log('Apellido:', surname);
-    console.log('Edad:', age);
-    console.log('Correo:', email);
-    console.log('Teléfono:', phone);
-    console.log('Contraseña:', password);
-    // Navegar a la pantalla de inicio de sesión después del registro exitoso
-    navigation.navigate('Login');
+  const handleRegister = async () => {
+    try {
+      const userData = await registerUsuario(name, surname, age, email, phone, password);
+      console.log('Usuario registrado:', userData);
+      Alert.alert('Registro exitoso', 'Te has registrado exitosamente.', [{ text: 'OK', onPress: () => navigation.navigate('Login') }]);
+    } catch (error) {
+      console.error('Error al registrar usuario:', error);
+      Alert.alert('Error', 'Hubo un error al intentar registrarse. Por favor, inténtalo de nuevo.');
+    }
   };
 
   return (
@@ -42,7 +43,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
         inputStyle={styles.input}
       />
       <Input
-        placeholder="Apellido"
+        placeholder="Apellidos"
         leftIcon={<Image source={require('../assets/icons/dobleuser.png')} style={styles.icon} />}
         value={surname}
         onChangeText={setSurname}

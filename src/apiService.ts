@@ -54,3 +54,33 @@ export const logoutUsuario = async () => {
     throw error;
   }
 };
+
+export const registerUsuario = async (nombreUsuario: string, apellidoUsuario: string, edadUsuario: string, correoUsuario: string, telefonoUsuario: string, contrasenaUsuario: string) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/usuarios`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        nombreUsuario,
+        apellidoUsuario,
+        edadUsuario: parseInt(edadUsuario), // Asegurarse de que edadUsuario sea un número
+        correoUsuario,
+        telefonoUsuario,
+        contrasenaUsuario,
+        tipoUsuario: 'cliente' // Puedes cambiar el tipo de usuario si es necesario
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Error al registrar usuario');
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
