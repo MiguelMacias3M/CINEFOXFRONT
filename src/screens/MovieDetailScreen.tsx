@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     margin: 5,
   },
   selectedHorarioButton: {
-    backgroundColor: '#E63916',
+    backgroundColor: 'orange',
   },
   horarioButtonText: {
     color: '#FFFFFF',
