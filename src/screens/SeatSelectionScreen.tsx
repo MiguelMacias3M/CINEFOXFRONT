@@ -216,6 +216,7 @@ const styles = StyleSheet.create({
   modalText: {
     fontSize: 16,
     marginBottom: 10,
+    color: '#000000',
   },
   modalButtonContainer: {
     flexDirection: 'row',
@@ -230,7 +231,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
   },
   modalButtonText: {
-    color: '#FFFFFF',
+    color: 'white',
     fontSize: 16,
   },
 });
