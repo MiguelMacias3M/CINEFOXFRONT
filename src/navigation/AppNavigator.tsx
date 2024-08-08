@@ -16,7 +16,7 @@ export type RootStackParamList = {
   Cartelera: undefined;
   Login: undefined;
   MovieDetail: { title: string; image: any; description: string; };
-  Payment: { movieTitle: string; schedule: string; seats: string[]; price: number; };
+  Payment: { carrito: { [key: number]: number } }; // Ajusta el tipo de parámetros para Payment
   Register: undefined;
   SeatSelection: { movieTitle: string; schedule: string; seatsCount: number; };
   AdminWelcome: { adminName: string; };

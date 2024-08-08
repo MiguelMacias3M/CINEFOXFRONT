@@ -1,22 +1,32 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView, Image, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { Text, Button } from 'react-native-elements';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '../navigation/AppNavigator';
+import { useNavigation } from '@react-navigation/native';
+
+type ContactScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Contact'>;
 
 const ContactScreen: React.FC = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
+  const navigation = useNavigation<ContactScreenNavigationProp>();
 
   const handleSend = () => {
-    // Aquí puedes manejar la lógica de envío del formulario
-    Alert.alert('Mensaje enviado', 'Tu mensaje ha sido enviado correctamente.');
+    Alert.alert('Mensaje enviado', 'Tu mensaje ha sido enviado correctamente');
+    navigation.navigate('Home');
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Image source={require('../assets/logo.png')} style={styles.logo} />
+      <View style={styles.logoContainer}>
+        <Image source={require('../assets/logo.png')} style={styles.logo} />
+      </View>
       <Text style={styles.title}>Contáctanos</Text>
-      <Text style={styles.subtitle}>Nos encantaría saber de ti. Por favor, llena el siguiente formulario y nos pondremos en contacto contigo lo antes posible.</Text>
+      <Text style={styles.subtitle}>
+        Nos encantaría saber de ti. Por favor, llena el siguiente formulario y nos pondremos en contacto contigo lo antes posible.
+      </Text>
       <View style={styles.form}>
         <TextInput
           style={styles.input}
@@ -61,10 +71,16 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: 'center',
   },
+  logoContainer: {
+    marginBottom: 20,
+    borderRadius: 100,
+    padding: 10,
+    backgroundColor: '#fff',
+  },
   logo: {
     width: 100,
     height: 100,
-    marginBottom: 20,
+    borderRadius: 50,
   },
   title: {
     fontSize: 28,
