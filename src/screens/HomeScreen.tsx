@@ -51,17 +51,18 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.menu}>
+      <View style={styles.menu}>
         <Text style={styles.menuItem}>Inicio</Text>
         <TouchableOpacity onPress={() => navigation.navigate('Cartelera')}>
           <Text style={styles.menuItem}>Cartelera</Text>
         </TouchableOpacity>
-        <Text style={styles.menuItem}>Próximos Estrenos</Text>
-        <Text style={styles.menuItem}>Contacto</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('Contact')}>
+          <Text style={styles.menuItem}>Contacto</Text>
+        </TouchableOpacity>
         <TouchableOpacity onPress={handleLogout}>
           <Text style={styles.menuItem}>Cerrar Sesión</Text>
         </TouchableOpacity>
-      </ScrollView>
+      </View>
       <View style={styles.header}>
         <Image source={require('../assets/logo.png')} style={styles.logo} />
         <Text style={styles.welcomeText}>Bienvenido a Cine-Fox</Text>
@@ -122,7 +123,6 @@ const styles = StyleSheet.create({
   menuItem: {
     color: '#FFFFFF',
     fontSize: 16,
-    marginHorizontal: 10,
   },
   header: {
     flexDirection: 'row',
