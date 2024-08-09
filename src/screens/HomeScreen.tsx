@@ -56,6 +56,9 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
         <TouchableOpacity onPress={() => navigation.navigate('Cartelera')}>
           <Text style={styles.menuItem}>Cartelera</Text>
         </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('Dulceria')}>
+          <Text style={styles.menuItem}>Dulceria</Text>
+        </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Contact')}>
           <Text style={styles.menuItem}>Contacto</Text>
         </TouchableOpacity>

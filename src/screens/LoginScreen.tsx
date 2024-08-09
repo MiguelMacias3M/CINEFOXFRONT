@@ -21,6 +21,8 @@ const LoginScreen = () => {
     try {
       const data = await loginUsuario(correoUsuario, contrasenaUsuario);
       console.log('Datos del usuario:', data);
+      console.log('Tipo de usuario', data.tipo);
+      console.log('Nombre:', data.nombre);
 
       navigation.navigate('Home');
     } catch (error) {
