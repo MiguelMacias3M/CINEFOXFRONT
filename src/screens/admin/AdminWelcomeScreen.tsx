@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Button, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../navigation/AppNavigator';
@@ -29,11 +29,45 @@ const AdminWelcomeScreen: React.FC<Props> = ({ route }) => {
     }
   };
 
+  const handleNavigation = (screen: keyof RootStackParamList) => {
+    navigation.navigate(screen);
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.welcomeText}>Bienvenido, {adminName}</Text>
       <Text style={styles.subtitle}>Panel de Administración</Text>
-      <Button title="Cerrar Sesión" onPress={handleLogout} color="#E50914" />
+
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          style={styles.adminButton}
+          onPress={() => handleNavigation('MovieManagement')}
+        >
+          <Text style={styles.buttonText}>Gestión de Películas</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.adminButton}
+          onPress={() => handleNavigation('UserManagement')}
+        >
+          <Text style={styles.buttonText}>Gestión de Usuarios</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.adminButton}
+          onPress={() => handleNavigation('SetRoomSchedule')}
+        >
+          <Text style={styles.buttonText}>Gestión de Horarios</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.adminButton}
+          onPress={() => handleNavigation('Reports')}
+        >
+          <Text style={styles.buttonText}>Reportes</Text>
+        </TouchableOpacity>
+      </View>
+
+      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+        <Text style={styles.logoutButtonText}>Cerrar Sesión</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -58,6 +92,36 @@ const styles = StyleSheet.create({
     color: '#BBBBBB',
     marginBottom: 40,
     textAlign: 'center',
+  },
+  buttonContainer: {
+    width: '100%',
+    marginBottom: 40,
+  },
+  adminButton: {
+    backgroundColor: '#1A252F',
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    marginBottom: 15,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  logoutButton: {
+    backgroundColor: '#E50914',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+    width: '60%',
+  },
+  logoutButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 

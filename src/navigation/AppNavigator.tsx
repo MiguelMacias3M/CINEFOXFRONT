@@ -9,8 +9,10 @@ import PaymentScreen from '../screens/PaymentScreen';
 import RegisterScreen from '../screens/RegisterScreen';
 import SeatSelectionScreen from '../screens/SeatSelectionScreen';
 import AdminWelcomeScreen from '../screens/admin/AdminWelcomeScreen';
-import ContactScreen from '../screens/ContactScreen';
-import DulceriaScreen from '../screens/DulceriaScreen';
+import MovieManagementScreen from '../screens/admin/MovieManagementScreen';
+import AssignMovieToRoomScreen from '../screens/admin/AssignMovieToRoomScreen';
+import SetRoomScheduleScreen from '../screens/admin/SetRoomScheduleScreen';
+import MovieFormScreen from '../screens/admin/MovieFormScreen'; // Asegúrate de crear esta pantalla para agregar nuevas películas
 
 export type RootStackParamList = {
   Home: undefined;
@@ -21,8 +23,10 @@ export type RootStackParamList = {
   Register: undefined;
   SeatSelection: { movieTitle: string; schedule: string; seatsCount: number; };
   AdminWelcome: { adminName: string; };
-  Contact: undefined;
-  Dulceria: undefined; // Nueva pantalla añadida
+  MovieManagement: undefined;
+  AssignMovieToRoom: { movieId: string; };
+  SetRoomSchedule: { movieId: string; roomId: string; };
+  MovieForm: undefined; // Pantalla para agregar nuevas películas
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -39,8 +43,10 @@ const AppNavigator: React.FC = () => {
         <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen name="SeatSelection" component={SeatSelectionScreen} />
         <Stack.Screen name="AdminWelcome" component={AdminWelcomeScreen} />
-        <Stack.Screen name="Contact" component={ContactScreen} />
-        <Stack.Screen name="Dulceria" component={DulceriaScreen} /> 
+        <Stack.Screen name="MovieManagement" component={MovieManagementScreen} />
+        <Stack.Screen name="AssignMovieToRoom" component={AssignMovieToRoomScreen} />
+        <Stack.Screen name="SetRoomSchedule" component={SetRoomScheduleScreen} />
+        <Stack.Screen name="MovieForm" component={MovieFormScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -8,10 +8,6 @@ import { useNavigation } from '@react-navigation/native';
 
 type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>;
 
-type Props = {
-  navigation: LoginScreenNavigationProp;
-};
-
 const LoginScreen = () => {
   const [correoUsuario, setCorreoUsuario] = useState('');
   const [contrasenaUsuario, setContrasenaUsuario] = useState('');
@@ -19,15 +15,17 @@ const LoginScreen = () => {
 
   const handleLogin = async () => {
     try {
-      const data = await loginUsuario(correoUsuario, contrasenaUsuario);
-      console.log('Datos del usuario:', data);
-      console.log('Tipo de usuario', data.tipo);
-      console.log('Nombre:', data.nombre);
-
-      navigation.navigate('Home');
+      const { decoded, token } = await loginUsuario(correoUsuario, contrasenaUsuario);
+      console.log('Datos del usuario:', decoded);
+  
+      // Puedes utilizar decoded.tipo (u otro campo) según sea necesario
+      if (decoded.tipo === 'admin') {
+        navigation.navigate('AdminWelcome', { adminName: decoded.nombre });
+      } else {
+        navigation.navigate('Home');
+      }
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
-
       Alert.alert('Error', 'Usuario o contraseña incorrectos');
     }
   };

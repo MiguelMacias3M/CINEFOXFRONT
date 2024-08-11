@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+
 const API_BASE_URL = 'https://apiboletos.onrender.com';
 
 export const loginUsuario = async (correoUsuario: string, contrasenaUsuario: string) => {
@@ -17,10 +18,28 @@ export const loginUsuario = async (correoUsuario: string, contrasenaUsuario: str
     }
 
     const data = await response.json();
+
     // Guardar el token en AsyncStorage
     await AsyncStorage.setItem('token', data.token);
 
-    return data;
+    // Decodificar el token para obtener la información del usuario
+    const decodeJWT = (token: string) => {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split('')
+          .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join('')
+      );
+      return JSON.parse(jsonPayload);
+    };
+    
+    const decoded = decodeJWT(data.token);
+    
+
+    // Retornar la información decodificada y el token
+    return { decoded, token: data.token };
   } catch (error) {
     console.error(error);
     throw error;
@@ -84,3 +103,126 @@ export const registerUsuario = async (nombreUsuario: string, apellidoUsuario: st
     throw error;
   }
 };
+
+// Función para crear una nueva película
+export const createMovie = async (title: string, description: string, imageUrl: string) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/peliculas`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${await AsyncStorage.getItem('token')}`,  // Agrega el token si es necesario
+      },
+      body: JSON.stringify({ title, description, imageUrl }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Error al crear la película');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+// Función para crear un nuevo horario
+export const createHorario = async (horaProgramada: string, turno: string, fechaDeEmision: string) => {
+  try {
+    console.log("Datos enviados:", { horaProgramada, turno, fechaDeEmision }); // Agrega este log
+    const response = await fetch(`${API_BASE_URL}/horarios`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${await AsyncStorage.getItem('token')}`,
+      },
+      body: JSON.stringify({
+        horaProgramada,
+        turno,
+        fechaDeEmision,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Respuesta de error:", errorData);
+      throw new Error('Error al crear el horario');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+// Función para obtener todos los horarios
+export const getHorarios = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/horarios`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${await AsyncStorage.getItem('token')}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Error al obtener los horarios');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+// Función para actualizar un horario
+export const updateHorario = async (idHorario: string, horaProgramada: string, turno: string, fechaDeEmision: string) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/horarios/${idHorario}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${await AsyncStorage.getItem('token')}`,
+      },
+      body: JSON.stringify({
+        horaProgramada,
+        turno,
+        fechaDeEmision,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Error al actualizar el horario');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+// Función para eliminar un horario
+export const deleteHorario = async (idHorario: string) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/horarios/${idHorario}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${await AsyncStorage.getItem('token')}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Error al eliminar el horario');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
