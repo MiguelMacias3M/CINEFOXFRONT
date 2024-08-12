@@ -74,6 +74,38 @@ export const logoutUsuario = async () => {
   }
 };
 
+//Registro de usuasrios administradores
+export const registerUsuarioAdmin = async (nombreUsuario: string, apellidoUsuario: string, edadUsuario: string, correoUsuario: string, telefonoUsuario: string, contrasenaUsuario: string) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/usuarios`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        nombreUsuario,
+        apellidoUsuario,
+        edadUsuario: parseInt(edadUsuario), // Asegurarse de que edadUsuario sea un número
+        correoUsuario,
+        telefonoUsuario,
+        contrasenaUsuario,
+        tipoUsuario: 'admin' // Especificamos que este usuario es un administrador
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Error al registrar usuario administrador');
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+
 export const registerUsuario = async (nombreUsuario: string, apellidoUsuario: string, edadUsuario: string, correoUsuario: string, telefonoUsuario: string, contrasenaUsuario: string) => {
   try {
     const response = await fetch(`${API_BASE_URL}/usuarios`, {
@@ -105,27 +137,74 @@ export const registerUsuario = async (nombreUsuario: string, apellidoUsuario: st
 };
 
 // Función para crear una nueva película
-export const createMovie = async (title: string, description: string, imageUrl: string) => {
+export const createMovie = async (nombrePelicula: string, directorPelicula: string, duracionPelicula: number, actoresPelicula: string, clasificacionPelicula: string, idHorario: number, precioBoleto: number) => {
   try {
+    const token = await AsyncStorage.getItem('token');
+    console.log('Token:', token);
+    console.log('Datos de la película:', {
+      nombrePelicula,
+      directorPelicula,
+      duracionPelicula,
+      actoresPelicula,
+      clasificacionPelicula,
+      idHorario,
+      precioBoleto
+    });
+
     const response = await fetch(`${API_BASE_URL}/peliculas`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${await AsyncStorage.getItem('token')}`,  // Agrega el token si es necesario
+        'Authorization': `Bearer ${token}`,
       },
-      body: JSON.stringify({ title, description, imageUrl }),
+      body: JSON.stringify({
+        nombrePelicula,
+        directorPelicula,
+        duracionPelicula,
+        actoresPelicula,
+        clasificacionPelicula,
+        idHorario,
+        precioBoleto,
+      }),
     });
 
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Error al crear la película:', errorText);
       throw new Error('Error al crear la película');
     }
 
     return await response.json();
   } catch (error) {
-    console.error(error);
+    console.error('Error en createMovie:', error);
     throw error;
   }
 };
+
+
+export const getAllPeliculas = async () => {
+  try {
+    const token = await AsyncStorage.getItem('token');
+    const response = await fetch(`${API_BASE_URL}/peliculas`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      console.error('Respuesta de la API:', await response.text()); // Log para ver el contenido de la respuesta
+      throw new Error('Error al obtener las películas');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error en getAllPeliculas:', error);
+    throw error;
+  }
+};
+
+
 
 // Función para crear un nuevo horario
 export const createHorario = async (horaProgramada: string, turno: string, fechaDeEmision: string) => {

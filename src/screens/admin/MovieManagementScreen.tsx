@@ -1,7 +1,9 @@
-import React from 'react';
-import { View, Text, StyleSheet, Button, FlatList, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState, useCallback } from 'react';
+import { View, Text, StyleSheet, Button, FlatList, TouchableOpacity, Alert } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../navigation/AppNavigator';
+import { useFocusEffect } from '@react-navigation/native';
+import { getAllPeliculas } from '../../apiService'; // Importa la función para obtener las películas
 
 type MovieManagementScreenNavigationProp = StackNavigationProp<RootStackParamList, 'MovieManagement'>;
 
@@ -9,23 +11,39 @@ type Props = {
   navigation: MovieManagementScreenNavigationProp;
 };
 
-const movies = [
-  { id: '1', title: 'Wolverine', description: 'Acción y aventura.' },
-  { id: '2', title: 'Intensamente 2', description: 'Animación y comedia.' },
-  { id: '3', title: 'Mi villano favorito', description: 'Animación y comedia.' },
-];
-
 const MovieManagementScreen: React.FC<Props> = ({ navigation }) => {
+  const [movies, setMovies] = useState([]);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchMovies();
+    }, [])
+  );
+
+  const fetchMovies = async () => {
+    try {
+      const data = await getAllPeliculas();
+      console.log('Películas recibidas:', data); // Para ver la respuesta de la API
+      setMovies(data);
+    } catch (error) {
+      console.error('Error al obtener las películas:', error);
+      Alert.alert('Error', 'No se pudieron cargar las películas');
+    }
+  };
 
   const handleAssignMovie = (movieId: string) => {
     navigation.navigate('AssignMovieToRoom', { movieId });
   };
 
+  const handleAddMovie = () => {
+    navigation.navigate('MovieForm'); // Navegar al formulario de películas
+  };
+
   const renderMovie = ({ item }) => (
     <View style={styles.movieCard}>
-      <Text style={styles.movieTitle}>{item.title}</Text>
-      <Text style={styles.movieDescription}>{item.description}</Text>
-      <TouchableOpacity style={styles.assignButton} onPress={() => handleAssignMovie(item.id)}>
+      <Text style={styles.movieTitle}>{item.nombrePelicula}</Text>
+      <Text style={styles.movieDescription}>{item.descripcion}</Text>
+      <TouchableOpacity style={styles.assignButton} onPress={() => handleAssignMovie(item.idPelicula)}>
         <Text style={styles.assignButtonText}>Asignar a Sala</Text>
       </TouchableOpacity>
     </View>
@@ -37,12 +55,12 @@ const MovieManagementScreen: React.FC<Props> = ({ navigation }) => {
       <FlatList
         data={movies}
         renderItem={renderMovie}
-        keyExtractor={item => item.id}
+        keyExtractor={item => item.idPelicula.toString()}
         contentContainerStyle={styles.listContainer}
       />
       <Button
         title="Agregar Nueva Película"
-        onPress={() => navigation.navigate('MovieForm')}
+        onPress={handleAddMovie}
         color="#E50914"
       />
     </View>

@@ -1,58 +1,129 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, Alert } from 'react-native';
-import { createPelicula } from '../apiService';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
+import { Picker } from '@react-native-picker/picker'; // Importa desde el nuevo paquete
+import { createMovie, getHorarios } from '../../apiService'; // Ajusta la ruta de importación según tu estructura
 
 const MovieFormScreen = ({ navigation }) => {
-    const [nombre, setNombre] = useState('');
-    const [director, setDirector] = useState('');
-    const [duracion, setDuracion] = useState('');
-    const [actores, setActores] = useState('');
-    const [clasificacion, setClasificacion] = useState('');
-    const [precio, setPrecio] = useState('');
+  const [nombrePelicula, setNombrePelicula] = useState('');
+  const [directorPelicula, setDirectorPelicula] = useState('');
+  const [duracionPelicula, setDuracionPelicula] = useState('');
+  const [actoresPelicula, setActoresPelicula] = useState('');
+  const [clasificacionPelicula, setClasificacionPelicula] = useState('');
+  const [idHorario, setIdHorario] = useState('');
+  const [horarios, setHorarios] = useState([]);
+  const [precioBoleto, setPrecioBoleto] = useState('');
 
-    const handleSubmit = async () => {
-        try {
-            const peliculaData = {
-                nombrePelicula: nombre,
-                directorPelicula: director,
-                duracionPelicula: parseInt(duracion),
-                actoresPelicula: actores,
-                clasificacionPelicula: clasificacion,
-                precioBoleto: parseInt(precio),
-                idHorario: 1 // Asignar un horario por defecto o manejarlo dinámicamente
-            };
+  useEffect(() => {
+    fetchHorarios();
+  }, []);
 
-            await createPelicula(peliculaData);
-            Alert.alert('Éxito', 'Película creada correctamente');
-            navigation.goBack(); // Volver a la pantalla anterior
-        } catch (error) {
-            Alert.alert('Error', 'No se pudo crear la película');
-        }
-    };
+  const fetchHorarios = async () => {
+    try {
+      const data = await getHorarios();
+      setHorarios(data);
+    } catch (error) {
+      Alert.alert('Error', 'No se pudieron cargar los horarios');
+    }
+  };
 
-    return (
-        <View style={{ padding: 20 }}>
-            <Text>Nombre de la Película</Text>
-            <TextInput value={nombre} onChangeText={setNombre} />
+  const handleSubmit = async () => {
+    try {
+      await createMovie(
+        nombrePelicula,
+        directorPelicula,
+        parseInt(duracionPelicula),
+        actoresPelicula,
+        clasificacionPelicula,
+        parseInt(idHorario),
+        parseFloat(precioBoleto)
+      );
+      Alert.alert('Éxito', 'Película creada correctamente');
+      navigation.goBack(); // Vuelve a la pantalla anterior después de crear la película
+    } catch (error) {
+      Alert.alert('Error', 'No se pudo crear la película');
+    }
+  };
 
-            <Text>Director</Text>
-            <TextInput value={director} onChangeText={setDirector} />
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Crear Película</Text>
 
-            <Text>Duración (minutos)</Text>
-            <TextInput value={duracion} onChangeText={setDuracion} keyboardType="numeric" />
+      <TextInput
+        style={styles.input}
+        placeholder="Nombre de la Película"
+        value={nombrePelicula}
+        onChangeText={setNombrePelicula}
+      />
 
-            <Text>Actores</Text>
-            <TextInput value={actores} onChangeText={setActores} />
+      <TextInput
+        style={styles.input}
+        placeholder="Director"
+        value={directorPelicula}
+        onChangeText={setDirectorPelicula}
+      />
 
-            <Text>Clasificación</Text>
-            <TextInput value={clasificacion} onChangeText={setClasificacion} />
+      <TextInput
+        style={styles.input}
+        placeholder="Duración (minutos)"
+        value={duracionPelicula}
+        onChangeText={setDuracionPelicula}
+        keyboardType="numeric"
+      />
 
-            <Text>Precio del Boleto</Text>
-            <TextInput value={precio} onChangeText={setPrecio} keyboardType="numeric" />
+      <TextInput
+        style={styles.input}
+        placeholder="Actores"
+        value={actoresPelicula}
+        onChangeText={setActoresPelicula}
+      />
 
-            <Button title="Crear Película" onPress={handleSubmit} />
-        </View>
-    );
+      <TextInput
+        style={styles.input}
+        placeholder="Clasificación"
+        value={clasificacionPelicula}
+        onChangeText={setClasificacionPelicula}
+      />
+
+      <Picker
+        selectedValue={idHorario}
+        onValueChange={(itemValue) => setIdHorario(itemValue)}
+      >
+        {horarios.map((horario) => (
+          <Picker.Item key={horario.idHorario} label={`Hora: ${horario.horaProgramada} - Fecha: ${horario.fechaDeEmision}`} value={horario.idHorario} />
+        ))}
+      </Picker>
+
+      <TextInput
+        style={styles.input}
+        placeholder="Precio del Boleto"
+        value={precioBoleto}
+        onChangeText={setPrecioBoleto}
+        keyboardType="numeric"
+      />
+
+      <Button title="Crear Película" onPress={handleSubmit} />
+    </View>
+  );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#fff',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  input: {
+    borderColor: '#ccc',
+    borderWidth: 1,
+    padding: 10,
+    marginBottom: 15,
+    borderRadius: 5,
+  },
+});
 
 export default MovieFormScreen;
