@@ -1,8 +1,9 @@
-import React from 'react';
-import { View, Text, StyleSheet, Button, FlatList, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../../navigation/AppNavigator';
+import { getSalas } from '../../apiService'; // Importa la función para obtener las salas
 
 type AssignMovieToRoomScreenNavigationProp = StackNavigationProp<RootStackParamList, 'AssignMovieToRoom'>;
 type AssignMovieToRoomScreenRouteProp = RouteProp<RootStackParamList, 'AssignMovieToRoom'>;
@@ -12,24 +13,32 @@ type Props = {
   route: AssignMovieToRoomScreenRouteProp;
 };
 
-const salas = [
-  { id: '1', name: 'Sala 1' },
-  { id: '2', name: 'Sala 2' },
-  { id: '3', name: 'Sala 3' },
-  { id: '4', name: 'Sala 4' },
-  { id: '5', name: 'Sala 5' },
-];
-
 const AssignMovieToRoomScreen: React.FC<Props> = ({ navigation, route }) => {
   const { movieId } = route.params;
+  const [salas, setSalas] = useState([]);
+
+  useEffect(() => {
+    fetchSalas();
+  }, []);
+
+  const fetchSalas = async () => {
+    try {
+      const data = await getSalas();
+      console.log('Salas recibidas:', data);
+      setSalas(data);
+    } catch (error) {
+      console.error('Error al obtener las salas:', error);
+      Alert.alert('Error', 'No se pudieron cargar las salas');
+    }
+  };
 
   const handleSelectRoom = (roomId: string) => {
     navigation.navigate('SetRoomSchedule', { movieId, roomId });
   };
 
   const renderRoom = ({ item }) => (
-    <TouchableOpacity style={styles.roomButton} onPress={() => handleSelectRoom(item.id)}>
-      <Text style={styles.roomButtonText}>{item.name}</Text>
+    <TouchableOpacity style={styles.roomButton} onPress={() => handleSelectRoom(item.idSala)}>
+      <Text style={styles.roomButtonText}>{item.nombreSala}</Text>
     </TouchableOpacity>
   );
 
@@ -39,7 +48,7 @@ const AssignMovieToRoomScreen: React.FC<Props> = ({ navigation, route }) => {
       <FlatList
         data={salas}
         renderItem={renderRoom}
-        keyExtractor={item => item.id}
+        keyExtractor={item => item.idSala.toString()}
         contentContainerStyle={styles.listContainer}
       />
     </View>

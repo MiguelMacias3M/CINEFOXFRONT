@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Button, FlatList, TouchableOpacity, Alert } fro
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../navigation/AppNavigator';
 import { useFocusEffect } from '@react-navigation/native';
-import { getAllPeliculas } from '../../apiService'; // Importa la función para obtener las películas
+import { getAllPeliculas, deletePelicula } from '../../apiService'; // Importa las funciones necesarias
 
 type MovieManagementScreenNavigationProp = StackNavigationProp<RootStackParamList, 'MovieManagement'>;
 
@@ -39,13 +39,53 @@ const MovieManagementScreen: React.FC<Props> = ({ navigation }) => {
     navigation.navigate('MovieForm'); // Navegar al formulario de películas
   };
 
+  const handleEditMovie = (movieId: string) => {
+    navigation.navigate('MovieForm', { movieId }); // Navegar al formulario de edición
+  };
+
+  const handleDeleteMovie = async (movieId: string) => {
+    Alert.alert(
+      'Eliminar Película',
+      '¿Estás seguro de que deseas eliminar esta película?',
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel',
+        },
+        {
+          text: 'Eliminar',
+          onPress: async () => {
+            try {
+              await deletePelicula(movieId);
+              Alert.alert('Película eliminada', 'La película ha sido eliminada correctamente.');
+              fetchMovies(); // Recargar las películas después de eliminar una
+            } catch (error) {
+              Alert.alert('Error', 'No se pudo eliminar la película');
+            }
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
   const renderMovie = ({ item }) => (
     <View style={styles.movieCard}>
       <Text style={styles.movieTitle}>{item.nombrePelicula}</Text>
-      <Text style={styles.movieDescription}>{item.descripcion}</Text>
-      <TouchableOpacity style={styles.assignButton} onPress={() => handleAssignMovie(item.idPelicula)}>
-        <Text style={styles.assignButtonText}>Asignar a Sala</Text>
-      </TouchableOpacity>
+      <Text style={styles.movieDetails}>Fecha: {item.fechaDeEmision}</Text>
+      <Text style={styles.movieDetails}>Hora: {item.horaProgramada}</Text>
+      <Text style={styles.movieDetails}>Turno: {item.turno}</Text>
+      <View style={styles.buttonGroup}>
+        <TouchableOpacity style={styles.assignButton} onPress={() => handleAssignMovie(item.idPelicula)}>
+          <Text style={styles.assignButtonText}>Asignar a Sala</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.editButton} onPress={() => handleEditMovie(item.idPelicula)}>
+          <Text style={styles.editButtonText}>Editar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.deleteButton} onPress={() => handleDeleteMovie(item.idPelicula)}>
+          <Text style={styles.deleteButtonText}>Eliminar</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 
@@ -95,10 +135,14 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     marginBottom: 10,
   },
-  movieDescription: {
+  movieDetails: {
     fontSize: 14,
     color: '#BBBBBB',
-    marginBottom: 10,
+    marginBottom: 5,
+  },
+  buttonGroup: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   assignButton: {
     backgroundColor: '#E50914',
@@ -108,6 +152,30 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   assignButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  editButton: {
+    backgroundColor: '#FFA726',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  editButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  deleteButton: {
+    backgroundColor: '#F44336',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  deleteButtonText: {
     color: '#FFFFFF',
     fontSize: 14,
     fontWeight: 'bold',

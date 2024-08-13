@@ -160,7 +160,7 @@ export const createMovie = async (nombrePelicula: string, directorPelicula: stri
   }
 };
 
-
+// Función para obtener todas las películas
 export const getAllPeliculas = async () => {
   try {
     const token = await AsyncStorage.getItem('token');
@@ -182,6 +182,57 @@ export const getAllPeliculas = async () => {
     throw error;
   }
 };
+
+export const updatePelicula = async (idPelicula: string, datosActualizados: object) => {
+  try {
+    const token = await AsyncStorage.getItem('token');
+    const response = await fetch(`${API_BASE_URL}/peliculas/${idPelicula}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(datosActualizados),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Error al actualizar la película:', errorData);
+      throw new Error('Error al actualizar la película');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error en updatePelicula:', error);
+    throw error;
+  }
+};
+
+
+//Eliminar peliculas
+export const deletePelicula = async (idPelicula: string) => {
+  try {
+    const token = await AsyncStorage.getItem('token');
+    const response = await fetch(`${API_BASE_URL}/peliculas/${idPelicula}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Error al eliminar la película:', errorData);
+      throw new Error('Error al eliminar la película');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error en deletePelicula:', error);
+    throw error;
+  }
+};
+
 
 
 
@@ -283,4 +334,31 @@ export const deleteHorario = async (idHorario: string) => {
     throw error;
   }
 };
+
+//Salas
+//Obtener todas las salas 
+export const getSalas = async () => {
+  try {
+    const token = await AsyncStorage.getItem('token');
+    const response = await fetch(`${API_BASE_URL}/salas`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Error al obtener las salas:', errorData);
+      throw new Error('Error al obtener las salas');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error en getSalas:', error);
+    throw error;
+  }
+};
+
+
 
