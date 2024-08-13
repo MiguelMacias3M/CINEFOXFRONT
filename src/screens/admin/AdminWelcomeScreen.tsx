@@ -1,6 +1,6 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { RouteProp } from '@react-navigation/native';
+import React, { useCallback } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, BackHandler } from 'react-native';
+import { RouteProp, useFocusEffect } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../navigation/AppNavigator';
 import { logoutUsuario } from '../../apiService';
@@ -29,9 +29,42 @@ const AdminWelcomeScreen: React.FC<Props> = ({ route }) => {
     }
   };
 
+  const confirmLogout = () => {
+    Alert.alert(
+      'Cerrar Sesión',
+      '¿Estás seguro de que deseas cerrar la sesión y salir?',
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel',
+        },
+        {
+          text: 'Salir',
+          onPress: handleLogout,
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
   const handleNavigation = (screen: keyof RootStackParamList) => {
     navigation.navigate(screen);
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        confirmLogout();
+        return true; // Esto evita que la acción de volver atrás ocurra automáticamente
+      };
+
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+      return () => {
+        BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+      };
+    }, [])
+  );
 
   return (
     <View style={styles.container}>
@@ -59,7 +92,7 @@ const AdminWelcomeScreen: React.FC<Props> = ({ route }) => {
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+      <TouchableOpacity style={styles.logoutButton} onPress={confirmLogout}>
         <Text style={styles.logoutButtonText}>Cerrar Sesión</Text>
       </TouchableOpacity>
     </View>
