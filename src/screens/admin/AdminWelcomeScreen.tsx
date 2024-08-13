@@ -47,7 +47,7 @@ const AdminWelcomeScreen: React.FC<Props> = ({ route }) => {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.adminButton}
-          onPress={() => handleNavigation('UserManagement')}
+          onPress={() => handleNavigation('AdminRegistration')}
         >
           <Text style={styles.buttonText}>Gestión de Usuarios</Text>
         </TouchableOpacity>
@@ -56,12 +56,6 @@ const AdminWelcomeScreen: React.FC<Props> = ({ route }) => {
           onPress={() => handleNavigation('SetRoomSchedule')}
         >
           <Text style={styles.buttonText}>Gestión de Horarios</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.adminButton}
-          onPress={() => handleNavigation('Reports')}
-        >
-          <Text style={styles.buttonText}>Reportes</Text>
         </TouchableOpacity>
       </View>
 

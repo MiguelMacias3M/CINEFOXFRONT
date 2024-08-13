@@ -74,67 +74,46 @@ export const logoutUsuario = async () => {
   }
 };
 
-//Registro de usuasrios administradores
+
 export const registerUsuarioAdmin = async (nombreUsuario: string, apellidoUsuario: string, edadUsuario: string, correoUsuario: string, telefonoUsuario: string, contrasenaUsuario: string) => {
   try {
+    // Validación de la edad antes de enviar
+    const edadUsuarioParsed = parseInt(edadUsuario);
+    if (isNaN(edadUsuarioParsed) || edadUsuarioParsed <= 0) {
+      throw new Error('La edad del usuario debe ser un número positivo.');
+    }
+
     const response = await fetch(`${API_BASE_URL}/usuarios`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        nombreUsuario,
-        apellidoUsuario,
-        edadUsuario: parseInt(edadUsuario), // Asegurarse de que edadUsuario sea un número
-        correoUsuario,
-        telefonoUsuario,
-        contrasenaUsuario,
-        tipoUsuario: 'admin' // Especificamos que este usuario es un administrador
+        nombreUsuario: nombreUsuario.trim(),
+        apellidoUsuario: apellidoUsuario.trim(),
+        edadUsuario: edadUsuarioParsed,
+        correoUsuario: correoUsuario.trim(),
+        telefonoUsuario: telefonoUsuario.trim(),
+        contrasenaUsuario: contrasenaUsuario,
+        tipoUsuario: 'admin' // Especificar el tipo de usuario como admin
       }),
     });
 
     if (!response.ok) {
+      const errorData = await response.json(); // Obtener detalles del error desde la respuesta del servidor
+      console.error('Detalles del error del servidor:', errorData);
       throw new Error('Error al registrar usuario administrador');
     }
 
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error(error);
+    console.error('Error en registerUsuarioAdmin:', error);
     throw error;
   }
 };
 
 
-export const registerUsuario = async (nombreUsuario: string, apellidoUsuario: string, edadUsuario: string, correoUsuario: string, telefonoUsuario: string, contrasenaUsuario: string) => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/usuarios`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        nombreUsuario,
-        apellidoUsuario,
-        edadUsuario: parseInt(edadUsuario), // Asegurarse de que edadUsuario sea un número
-        correoUsuario,
-        telefonoUsuario,
-        contrasenaUsuario,
-        tipoUsuario: 'cliente' // Puedes cambiar el tipo de usuario si es necesario
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error('Error al registrar usuario');
-    }
-
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
-};
 
 // Función para crear una nueva película
 export const createMovie = async (nombrePelicula: string, directorPelicula: string, duracionPelicula: number, actoresPelicula: string, clasificacionPelicula: string, idHorario: number, precioBoleto: number) => {
