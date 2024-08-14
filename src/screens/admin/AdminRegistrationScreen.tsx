@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, Image, Alert } from 'react-native';
+import { View, StyleSheet, ScrollView, Image, Alert, ActivityIndicator } from 'react-native';
 import { Input, Button, Text } from 'react-native-elements';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../navigation/AppNavigator';
@@ -14,8 +14,10 @@ const AdminRegistrationScreen: React.FC<{ navigation: AdminRegistrationScreenNav
   const [correoUsuario, setCorreoUsuario] = useState('');
   const [telefonoUsuario, setTelefonoUsuario] = useState('');
   const [contrasenaUsuario, setContrasenaUsuario] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleRegister = async () => {
+    setLoading(true);
     try {
       const userData = await registerUsuarioAdmin(
         nombreUsuario,
@@ -30,6 +32,8 @@ const AdminRegistrationScreen: React.FC<{ navigation: AdminRegistrationScreenNav
     } catch (error) {
       console.error('Error al registrar administrador:', error);
       Alert.alert('Error', 'Hubo un error al intentar registrar al administrador. Por favor, inténtalo de nuevo.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -89,18 +93,16 @@ const AdminRegistrationScreen: React.FC<{ navigation: AdminRegistrationScreenNav
         inputStyle={styles.input}
         secureTextEntry
       />
-      <Button
-        title="Registrar"
-        buttonStyle={styles.button}
-        titleStyle={styles.buttonText}
-        onPress={handleRegister}
-      />
-      <Text style={styles.footerText}>
-        ¿Ya tienes una cuenta?{' '}
-        <Text style={styles.footerLink} onPress={() => navigation.goBack()}>
-          Iniciar sesión
-        </Text>
-      </Text>
+      {loading ? (
+        <ActivityIndicator size="large" color="#E50914" />
+      ) : (
+        <Button
+          title="Registrar"
+          buttonStyle={styles.button}
+          titleStyle={styles.buttonText}
+          onPress={handleRegister}
+        />
+      )}
     </ScrollView>
   );
 };
