@@ -112,8 +112,51 @@ export const registerUsuarioAdmin = async (nombreUsuario: string, apellidoUsuari
     throw error;
   }
 };
+ //Registro de usuarios administradores
+export const registerUsuarioCliente = async (
+  nombreUsuario: string,
+  apellidoUsuario: string,
+  edadUsuario: string,
+  correoUsuario: string,
+  telefonoUsuario: string,
+  contrasenaUsuario: string
+) => {
+  try {
+    // Validación de la edad antes de enviar
+    const edadUsuarioParsed = parseInt(edadUsuario);
+    if (isNaN(edadUsuarioParsed) || edadUsuarioParsed <= 0) {
+      throw new Error('La edad del usuario debe ser un número positivo.');
+    }
 
+    const response = await fetch(`${API_BASE_URL}/usuarios`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        nombreUsuario: nombreUsuario.trim(),
+        apellidoUsuario: apellidoUsuario.trim(),
+        edadUsuario: edadUsuarioParsed,
+        correoUsuario: correoUsuario.trim(),
+        telefonoUsuario: telefonoUsuario.trim(),
+        contrasenaUsuario: contrasenaUsuario,
+        tipoUsuario: 'cliente' // Especificar el tipo de usuario como cliente
+      }),
+    });
 
+    if (!response.ok) {
+      const errorData = await response.json(); // Obtener detalles del error desde la respuesta del servidor
+      console.error('Detalles del error del servidor:', errorData);
+      throw new Error('Error al registrar usuario cliente');
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error en registerUsuarioCliente:', error);
+    throw error;
+  }
+};
 
 // Función para crear una nueva película
 export const createMovie = async (nombrePelicula: string, directorPelicula: string, duracionPelicula: number, actoresPelicula: string, clasificacionPelicula: string, idHorario: number, precioBoleto: number) => {

@@ -1,10 +1,9 @@
-// RegisterScreen.tsx
 import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView, Image, Alert } from 'react-native';
 import { Input, Button, Text } from 'react-native-elements';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
-import { registerUsuario } from '../apiService';
+import { registerUsuarioCliente } from '../apiService'; // Importa la función correcta
 
 type RegisterScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Register'>;
 
@@ -22,7 +21,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
 
   const handleRegister = async () => {
     try {
-      const userData = await registerUsuario(name, surname, age, email, phone, password);
+      const userData = await registerUsuarioCliente(name, surname, age, email, phone, password);
       console.log('Usuario registrado:', userData);
       Alert.alert('Registro exitoso', 'Te has registrado exitosamente.', [{ text: 'OK', onPress: () => navigation.navigate('Login') }]);
     } catch (error) {
