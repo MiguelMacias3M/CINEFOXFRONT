@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet } from 'react-native';
+import { View, StyleSheet, ScrollView, Image, Alert } from 'react-native';
+import { Input, Button, Text } from 'react-native-elements';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '../../navigation/AppNavigator';
 import { registerUsuarioAdmin } from '../../apiService';
 
-const AdminRegistrationScreen: React.FC = ({ navigation }) => {
+type AdminRegistrationScreenNavigationProp = StackNavigationProp<RootStackParamList, 'AdminRegistration'>;
+
+const AdminRegistrationScreen: React.FC<{ navigation: AdminRegistrationScreenNavigationProp }> = ({ navigation }) => {
   const [nombreUsuario, setNombreUsuario] = useState('');
   const [apellidoUsuario, setApellidoUsuario] = useState('');
   const [edadUsuario, setEdadUsuario] = useState('');
@@ -12,17 +17,7 @@ const AdminRegistrationScreen: React.FC = ({ navigation }) => {
 
   const handleRegister = async () => {
     try {
-      console.log('Datos a enviar:', {
-        nombreUsuario,
-        apellidoUsuario,
-        edadUsuario,
-        correoUsuario,
-        telefonoUsuario,
-        contrasenaUsuario,
-        tipoUsuario: 'admin',
-      });
-
-      const response = await registerUsuarioAdmin(
+      const userData = await registerUsuarioAdmin(
         nombreUsuario,
         apellidoUsuario,
         edadUsuario,
@@ -30,133 +25,133 @@ const AdminRegistrationScreen: React.FC = ({ navigation }) => {
         telefonoUsuario,
         contrasenaUsuario
       );
-
-      console.log('Respuesta del servidor:', response);
-
-      Alert.alert('Éxito', 'Administrador registrado correctamente');
-      navigation.goBack(); // Regresar a la pantalla anterior
+      console.log('Administrador registrado:', userData);
+      Alert.alert('Registro exitoso', 'Administrador registrado correctamente.', [{ text: 'OK', onPress: () => navigation.goBack() }]);
     } catch (error) {
-      console.error('Error durante el registro:', error);
-      Alert.alert('Error', 'No se pudo registrar el administrador');
+      console.error('Error al registrar administrador:', error);
+      Alert.alert('Error', 'Hubo un error al intentar registrar al administrador. Por favor, inténtalo de nuevo.');
     }
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Registrar Administrador</Text>
-
-      <TextInput
-        style={styles.input}
+    <ScrollView contentContainerStyle={styles.container}>
+      <Text style={styles.title}>Registro de Administrador en CINE-FOX</Text>
+      <Input
         placeholder="Nombre"
-        placeholderTextColor="#aaaaaa"
+        leftIcon={<Image source={require('../../assets/icons/user.png')} style={styles.icon} />}
         value={nombreUsuario}
         onChangeText={setNombreUsuario}
-        underlineColorAndroid="transparent"
-        autoCapitalize="none"
+        containerStyle={styles.inputContainer}
+        inputStyle={styles.input}
       />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Apellido"
-        placeholderTextColor="#aaaaaa"
+      <Input
+        placeholder="Apellidos"
+        leftIcon={<Image source={require('../../assets/icons/dobleuser.png')} style={styles.icon} />}
         value={apellidoUsuario}
         onChangeText={setApellidoUsuario}
-        underlineColorAndroid="transparent"
-        autoCapitalize="none"
+        containerStyle={styles.inputContainer}
+        inputStyle={styles.input}
       />
-
-      <TextInput
-        style={styles.input}
+      <Input
         placeholder="Edad"
-        placeholderTextColor="#aaaaaa"
+        leftIcon={<Image source={require('../../assets/icons/calendar.png')} style={styles.icon} />}
         value={edadUsuario}
         onChangeText={setEdadUsuario}
         keyboardType="numeric"
-        underlineColorAndroid="transparent"
-        autoCapitalize="none"
+        containerStyle={styles.inputContainer}
+        inputStyle={styles.input}
       />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Correo"
-        placeholderTextColor="#aaaaaa"
+      <Input
+        placeholder="Correo electrónico"
+        leftIcon={<Image source={require('../../assets/icons/correo.png')} style={styles.icon} />}
         value={correoUsuario}
         onChangeText={setCorreoUsuario}
         keyboardType="email-address"
-        underlineColorAndroid="transparent"
         autoCapitalize="none"
+        containerStyle={styles.inputContainer}
+        inputStyle={styles.input}
       />
-
-      <TextInput
-        style={styles.input}
+      <Input
         placeholder="Teléfono"
-        placeholderTextColor="#aaaaaa"
+        leftIcon={<Image source={require('../../assets/icons/phone.png')} style={styles.icon} />}
         value={telefonoUsuario}
         onChangeText={setTelefonoUsuario}
         keyboardType="phone-pad"
-        underlineColorAndroid="transparent"
-        autoCapitalize="none"
+        containerStyle={styles.inputContainer}
+        inputStyle={styles.input}
       />
-
-      <TextInput
-        style={styles.input}
+      <Input
         placeholder="Contraseña"
-        placeholderTextColor="#aaaaaa"
+        leftIcon={<Image source={require('../../assets/icons/password.png')} style={styles.icon} />}
         value={contrasenaUsuario}
         onChangeText={setContrasenaUsuario}
+        containerStyle={styles.inputContainer}
+        inputStyle={styles.input}
         secureTextEntry
-        underlineColorAndroid="transparent"
-        autoCapitalize="none"
       />
-
-      <TouchableOpacity
-        style={styles.button}
+      <Button
+        title="Registrar"
+        buttonStyle={styles.button}
+        titleStyle={styles.buttonText}
         onPress={handleRegister}
-      >
-        <Text style={styles.buttonTitle}>Registrar</Text>
-      </TouchableOpacity>
-    </View>
+      />
+      <Text style={styles.footerText}>
+        ¿Ya tienes una cuenta?{' '}
+        <Text style={styles.footerLink} onPress={() => navigation.goBack()}>
+          Iniciar sesión
+        </Text>
+      </Text>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    alignItems: 'center',
+    flexGrow: 1,
     justifyContent: 'center',
-    backgroundColor: '#2D3E50',
+    alignItems: 'center',
+    padding: 20,
+    backgroundColor: '#f0f0f0',
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
-    color: '#FFFFFF',
+    color: '#E50914',
+    marginBottom: 40,
+    textAlign: 'center',
+  },
+  inputContainer: {
+    width: '100%',
     marginBottom: 20,
   },
   input: {
-    height: 48,
-    borderRadius: 5,
-    overflow: 'hidden',
-    backgroundColor: '#FFFFFF',
-    marginTop: 10,
-    marginBottom: 10,
-    paddingLeft: 16,
-    width: '80%',
+    paddingLeft: 10,
+  },
+  icon: {
+    width: 20,
+    height: 20,
   },
   button: {
     backgroundColor: '#E50914',
-    marginLeft: 30,
-    marginRight: 30,
-    marginTop: 20,
-    height: 48,
-    borderRadius: 5,
-    alignItems: "center",
+    width: '100%',
+    paddingVertical: 15,
+    alignItems: 'center',
     justifyContent: 'center',
-    width: '80%',
   },
-  buttonTitle: {
-    color: 'white',
+  buttonText: {
+    color: '#fff',
     fontSize: 16,
-    fontWeight: "bold"
+    fontWeight: 'bold',
+    right: 60,
+  },
+  footerText: {
+    marginTop: 20,
+    fontSize: 16,
+    color: '#888',
+  },
+  footerLink: {
+    color: '#E50914',
+    fontWeight: 'bold',
   },
 });
 
