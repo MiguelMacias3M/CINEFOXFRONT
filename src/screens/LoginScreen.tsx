@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Image, ScrollView, Alert } from 'react-native';
+import { View, StyleSheet, Image, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import { Input, Button, Text } from 'react-native-elements';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
@@ -11,9 +11,11 @@ type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Login'
 const LoginScreen = () => {
   const [correoUsuario, setCorreoUsuario] = useState('');
   const [contrasenaUsuario, setContrasenaUsuario] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigation = useNavigation<LoginScreenNavigationProp>();
 
   const handleLogin = async () => {
+    setLoading(true);
     try {
       const { decoded, token } = await loginUsuario(correoUsuario, contrasenaUsuario);
       console.log('Datos del usuario:', decoded);
@@ -27,6 +29,8 @@ const LoginScreen = () => {
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
       Alert.alert('Error', 'Usuario o contraseña incorrectos');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -55,12 +59,16 @@ const LoginScreen = () => {
         inputStyle={styles.input}
         secureTextEntry
       />
-      <Button
-        title="Iniciar sesión"
-        buttonStyle={styles.button}
-        titleStyle={styles.buttonText}
-        onPress={handleLogin}
-      />
+      {loading ? (
+        <ActivityIndicator size="large" color="#E50914" />
+      ) : (
+        <Button
+          title="Iniciar sesión"
+          buttonStyle={styles.button}
+          titleStyle={styles.buttonText}
+          onPress={handleLogin}
+        />
+      )}
       <Text style={styles.footerText}>
         ¿No tienes una cuenta?{' '}
         <Text style={styles.footerLink} onPress={() => navigation.navigate('Register')}>

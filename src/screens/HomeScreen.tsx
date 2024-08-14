@@ -1,6 +1,7 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, FlatList, TouchableOpacity, Alert } from 'react-native';
+import React, { useCallback } from 'react';
+import { View, Text, StyleSheet, Image, ScrollView, FlatList, TouchableOpacity, Alert, BackHandler } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { useFocusEffect } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { logoutUsuario } from '../apiService';
 
@@ -38,6 +39,24 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
     </View>
   );
 
+  const confirmLogout = () => {
+    Alert.alert(
+      'Cerrar Sesión',
+      '¿Estás seguro de que deseas cerrar la sesión y salir?',
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel',
+        },
+        {
+          text: 'Salir',
+          onPress: handleLogout,
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
   const handleLogout = async () => {
     try {
       await logoutUsuario();
@@ -49,6 +68,21 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
     }
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        confirmLogout();
+        return true; // Evita que la acción de volver atrás ocurra automáticamente
+      };
+
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+      return () => {
+        BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+      };
+    }, [])
+  );
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.menu}>
@@ -59,10 +93,10 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
         <TouchableOpacity onPress={() => navigation.navigate('Dulceria')}>
           <Text style={styles.menuItem}>Dulceria</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('Contact')}>
+        <TouchableOpacity onPress={() => navigation.navigate('Contacto')}>
           <Text style={styles.menuItem}>Contacto</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={handleLogout}>
+        <TouchableOpacity onPress={confirmLogout}>
           <Text style={styles.menuItem}>Cerrar Sesión</Text>
         </TouchableOpacity>
       </View>

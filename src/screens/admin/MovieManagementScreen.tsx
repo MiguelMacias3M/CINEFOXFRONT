@@ -39,9 +39,17 @@ const MovieManagementScreen: React.FC<Props> = ({ navigation }) => {
     navigation.navigate('MovieForm'); // Navegar al formulario de películas
   };
 
-  const handleEditMovie = (movieId: string) => {
-    navigation.navigate('MovieForm', { movieId }); // Navegar al formulario de edición
+  const handleEditMovie = (movie) => {
+    navigation.navigate('EditMovie', {
+      movieId: movie.idPelicula,
+      nombrePelicula: movie.nombrePelicula,
+      descripcion: movie.descripcion,
+      fechaDeEmision: movie.fechaDeEmision,
+      horaProgramada: movie.horaProgramada,
+      turno: movie.turno,
+    });
   };
+  
 
   const handleDeleteMovie = async (movieId: string) => {
     Alert.alert(
@@ -79,7 +87,7 @@ const MovieManagementScreen: React.FC<Props> = ({ navigation }) => {
         <TouchableOpacity style={styles.assignButton} onPress={() => handleAssignMovie(item.idPelicula)}>
           <Text style={styles.assignButtonText}>Asignar a Sala</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.editButton} onPress={() => handleEditMovie(item.idPelicula)}>
+        <TouchableOpacity style={styles.editButton} onPress={() => handleEditMovie(item)}>
           <Text style={styles.editButtonText}>Editar</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.deleteButton} onPress={() => handleDeleteMovie(item.idPelicula)}>

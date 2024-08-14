@@ -8,12 +8,15 @@ import MovieDetailScreen from '../screens/MovieDetailScreen';
 import PaymentScreen from '../screens/PaymentScreen';
 import RegisterScreen from '../screens/RegisterScreen';
 import SeatSelectionScreen from '../screens/SeatSelectionScreen';
+import DulceriaScreen from '../screens/DulceriaScreen';
+import ContactScreen from '../screens/ContactScreen';
 import AdminWelcomeScreen from '../screens/admin/AdminWelcomeScreen';
 import MovieManagementScreen from '../screens/admin/MovieManagementScreen';
 import AssignMovieToRoomScreen from '../screens/admin/AssignMovieToRoomScreen';
 import SetRoomScheduleScreen from '../screens/admin/SetRoomScheduleScreen';
-import MovieFormScreen from '../screens/admin/MovieFormScreen'; // Asegúrate de crear esta pantalla para agregar nuevas películas
-import AdminRegistrationScreen from '../screens/admin/AdminRegistrationScreen'; // Importa la nueva pantalla
+import MovieFormScreen from '../screens/admin/MovieFormScreen';
+import AdminRegistrationScreen from '../screens/admin/AdminRegistrationScreen';
+import EditMovieScreen from '../screens/admin/EditMovieScreen';
 
 export type RootStackParamList = {
   Home: undefined;
@@ -23,12 +26,15 @@ export type RootStackParamList = {
   Payment: { movieTitle: string; schedule: string; seats: string[]; price: number; };
   Register: undefined;
   SeatSelection: { movieTitle: string; schedule: string; seatsCount: number; };
+  Dulceria: undefined;
+  Contacto: undefined;
   AdminWelcome: { adminName: string; };
   MovieManagement: undefined;
   AssignMovieToRoom: { movieId: string; };
   SetRoomSchedule: { movieId: string; roomId: string; };
   MovieForm: undefined; // Pantalla para agregar nuevas películas
   AdminRegistration: undefined; // Pantalla para registrar administradores
+  EditMovie: { movieId: string; nombrePelicula: string; descripcion: string; fechaDeEmision: string; horaProgramada: string; turno: string; }; // Pantalla para editar películas
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -44,12 +50,15 @@ const AppNavigator: React.FC = () => {
         <Stack.Screen name="Payment" component={PaymentScreen} />
         <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen name="SeatSelection" component={SeatSelectionScreen} />
+        <Stack.Screen name="Dulceria" component={DulceriaScreen} />
+        <Stack.Screen name="Contacto" component={ContactScreen} />
         <Stack.Screen name="AdminWelcome" component={AdminWelcomeScreen} />
         <Stack.Screen name="MovieManagement" component={MovieManagementScreen} />
         <Stack.Screen name="AssignMovieToRoom" component={AssignMovieToRoomScreen} />
         <Stack.Screen name="SetRoomSchedule" component={SetRoomScheduleScreen} />
         <Stack.Screen name="MovieForm" component={MovieFormScreen} />
         <Stack.Screen name="AdminRegistration" component={AdminRegistrationScreen} />
+        <Stack.Screen name="EditMovie" component={EditMovieScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
