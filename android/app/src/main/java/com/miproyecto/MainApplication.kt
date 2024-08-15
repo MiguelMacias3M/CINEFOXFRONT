@@ -1,4 +1,4 @@
-package com.miproyecto
+package com.cinefox
 
 import android.app.Application
 import com.facebook.react.PackageList
