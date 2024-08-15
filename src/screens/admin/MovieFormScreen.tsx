@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, Alert, StyleSheet, Image } from 'react-native';
 import { Picker } from '@react-native-picker/picker'; // Importa desde el nuevo paquete
 import { launchImageLibrary } from 'react-native-image-picker'; // Importa la función para seleccionar imágenes
-import { createMovie, getHorarios } from '../../apiService'; // Ajusta la ruta de importación según tu estructura
+import { createMovie } from '../../apiService'; // Ajusta la ruta de importación según tu estructura
 
 const MovieFormScreen = ({ navigation }) => {
   const [nombrePelicula, setNombrePelicula] = useState('');
@@ -10,23 +10,10 @@ const MovieFormScreen = ({ navigation }) => {
   const [duracionPelicula, setDuracionPelicula] = useState('');
   const [actoresPelicula, setActoresPelicula] = useState('');
   const [clasificacionPelicula, setClasificacionPelicula] = useState('');
-  const [idHorario, setIdHorario] = useState('');
-  const [horarios, setHorarios] = useState([]);
   const [precioBoleto, setPrecioBoleto] = useState('');
   const [imagenPelicula, setImagenPelicula] = useState(null); // Nuevo estado para manejar la imagen
 
-  useEffect(() => {
-    fetchHorarios();
-  }, []);
 
-  const fetchHorarios = async () => {
-    try {
-      const data = await getHorarios();
-      setHorarios(data);
-    } catch (error) {
-      Alert.alert('Error', 'No se pudieron cargar los horarios');
-    }
-  };
 
   const handleImagePick = () => {
     launchImageLibrary({ mediaType: 'photo' }, (response) => {
@@ -48,7 +35,6 @@ const MovieFormScreen = ({ navigation }) => {
       formData.append('duracionPelicula', duracionPelicula);
       formData.append('actoresPelicula', actoresPelicula);
       formData.append('clasificacionPelicula', clasificacionPelicula);
-      formData.append('idHorario', idHorario);
       formData.append('precioBoleto', precioBoleto);
 
       if (imagenPelicula) {
@@ -107,19 +93,6 @@ const MovieFormScreen = ({ navigation }) => {
         onChangeText={setClasificacionPelicula}
       />
 
-      <Picker
-        selectedValue={idHorario}
-        onValueChange={(itemValue) => setIdHorario(itemValue)}
-      >
-        <Picker.Item label="Selecciona un horario" value="" />
-        {horarios.map((horario) => (
-          <Picker.Item
-            key={horario.idHorario}
-            label={`Hora: ${horario.horaProgramada} - Fecha: ${horario.fechaDeEmision}`}
-            value={horario.idHorario}
-          />
-        ))}
-      </Picker>
 
       <TextInput
         style={styles.input}
