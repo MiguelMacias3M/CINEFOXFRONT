@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Button, Alert, StyleSheet, Image } from 'react-native';
 import { Picker } from '@react-native-picker/picker'; // Importa desde el nuevo paquete
+import { launchImageLibrary } from 'react-native-image-picker'; // Importa la función para seleccionar imágenes
 import { createMovie, getHorarios } from '../../apiService'; // Ajusta la ruta de importación según tu estructura
 
 const MovieFormScreen = ({ navigation }) => {
@@ -12,6 +13,7 @@ const MovieFormScreen = ({ navigation }) => {
   const [idHorario, setIdHorario] = useState('');
   const [horarios, setHorarios] = useState([]);
   const [precioBoleto, setPrecioBoleto] = useState('');
+  const [imagenPelicula, setImagenPelicula] = useState(null); // Nuevo estado para manejar la imagen
 
   useEffect(() => {
     fetchHorarios();
@@ -26,17 +28,38 @@ const MovieFormScreen = ({ navigation }) => {
     }
   };
 
+  const handleImagePick = () => {
+    launchImageLibrary({ mediaType: 'photo' }, (response) => {
+      if (response.didCancel) {
+        // El usuario canceló la selección de imagen
+      } else if (response.errorCode) {
+        Alert.alert('Error', 'Error al seleccionar la imagen');
+      } else {
+        setImagenPelicula(response.assets[0]); // Asume que la primera imagen es la seleccionada
+      }
+    });
+  };
+
   const handleSubmit = async () => {
     try {
-      await createMovie(
-        nombrePelicula,
-        directorPelicula,
-        parseInt(duracionPelicula),
-        actoresPelicula,
-        clasificacionPelicula,
-        parseInt(idHorario),
-        parseFloat(precioBoleto)
-      );
+      const formData = new FormData();
+      formData.append('nombrePelicula', nombrePelicula);
+      formData.append('directorPelicula', directorPelicula);
+      formData.append('duracionPelicula', duracionPelicula);
+      formData.append('actoresPelicula', actoresPelicula);
+      formData.append('clasificacionPelicula', clasificacionPelicula);
+      formData.append('idHorario', idHorario);
+      formData.append('precioBoleto', precioBoleto);
+
+      if (imagenPelicula) {
+        formData.append('imagenPelicula', {
+          uri: imagenPelicula.uri,
+          type: imagenPelicula.type,
+          name: imagenPelicula.fileName,
+        });
+      }
+
+      await createMovie(formData);
       Alert.alert('Éxito', 'Película creada correctamente');
       navigation.goBack(); // Vuelve a la pantalla anterior después de crear la película
     } catch (error) {
@@ -88,8 +111,13 @@ const MovieFormScreen = ({ navigation }) => {
         selectedValue={idHorario}
         onValueChange={(itemValue) => setIdHorario(itemValue)}
       >
+        <Picker.Item label="Selecciona un horario" value="" />
         {horarios.map((horario) => (
-          <Picker.Item key={horario.idHorario} label={`Hora: ${horario.horaProgramada} - Fecha: ${horario.fechaDeEmision}`} value={horario.idHorario} />
+          <Picker.Item
+            key={horario.idHorario}
+            label={`Hora: ${horario.horaProgramada} - Fecha: ${horario.fechaDeEmision}`}
+            value={horario.idHorario}
+          />
         ))}
       </Picker>
 
@@ -100,6 +128,14 @@ const MovieFormScreen = ({ navigation }) => {
         onChangeText={setPrecioBoleto}
         keyboardType="numeric"
       />
+
+      <Button title="Seleccionar Imagen" onPress={handleImagePick} />
+      {imagenPelicula && (
+        <Image
+          source={{ uri: imagenPelicula.uri }}
+          style={styles.image}
+        />
+      )}
 
       <Button title="Crear Película" onPress={handleSubmit} />
     </View>
@@ -123,6 +159,12 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 15,
     borderRadius: 5,
+  },
+  image: {
+    width: 100,
+    height: 100,
+    resizeMode: 'cover',
+    marginVertical: 10,
   },
 });
 

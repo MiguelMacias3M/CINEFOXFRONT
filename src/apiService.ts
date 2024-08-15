@@ -158,36 +158,15 @@ export const registerUsuarioCliente = async (
   }
 };
 
-// Función para crear una nueva película
-export const createMovie = async (nombrePelicula: string, directorPelicula: string, duracionPelicula: number, actoresPelicula: string, clasificacionPelicula: string, idHorario: number, precioBoleto: number) => {
+export const createMovie = async (formData: FormData) => {
   try {
-    const token = await AsyncStorage.getItem('token');
-    console.log('Token:', token);
-    console.log('Datos de la película:', {
-      nombrePelicula,
-      directorPelicula,
-      duracionPelicula,
-      actoresPelicula,
-      clasificacionPelicula,
-      idHorario,
-      precioBoleto
-    });
-
+    const token = await AsyncStorage.getItem('token'); // Recupera el token del almacenamiento
     const response = await fetch(`${API_BASE_URL}/peliculas`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
+        'Authorization': `Bearer ${token}`, // Incluye el token en la cabecera de autorización
       },
-      body: JSON.stringify({
-        nombrePelicula,
-        directorPelicula,
-        duracionPelicula,
-        actoresPelicula,
-        clasificacionPelicula,
-        idHorario,
-        precioBoleto,
-      }),
+      body: formData, // Envía los datos de la película como FormData
     });
 
     if (!response.ok) {
@@ -196,12 +175,14 @@ export const createMovie = async (nombrePelicula: string, directorPelicula: stri
       throw new Error('Error al crear la película');
     }
 
-    return await response.json();
+    return await response.json(); // Devuelve la respuesta en formato JSON si la solicitud fue exitosa
   } catch (error) {
     console.error('Error en createMovie:', error);
     throw error;
   }
 };
+
+
 
 // Función para obtener todas las películas
 export const getAllPeliculas = async () => {
