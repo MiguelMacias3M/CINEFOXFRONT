@@ -1,6 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-
 const API_BASE_URL = 'https://apiboletos.onrender.com';
 
 export const loginUsuario = async (correoUsuario: string, contrasenaUsuario: string) => {
@@ -261,56 +260,57 @@ export const deletePelicula = async (idPelicula: string) => {
 
 
 // Función para crear un nuevo horario
-export const createHorario = async (horaProgramada: string, turno: string, fechaDeEmision: string) => {
+export const createHorario = async (horaProgramada: string, fechaDeEmision: string) => {
   try {
-    console.log("Datos enviados:", { horaProgramada, turno, fechaDeEmision }); // Agrega este log
+    const token = await AsyncStorage.getItem('token'); // Recuperar el token almacenado
     const response = await fetch(`${API_BASE_URL}/horarios`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${await AsyncStorage.getItem('token')}`,
+        'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify({
         horaProgramada,
-        turno,
         fechaDeEmision,
       }),
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      console.error("Respuesta de error:", errorData);
+      const errorData = await response.json(); // Obtener detalles del error desde la respuesta del servidor
+      console.error('Detalles del error del servidor:', errorData);
       throw new Error('Error al crear el horario');
     }
 
-    return await response.json();
+    const data = await response.json();
+    return data;
   } catch (error) {
-    console.error(error);
+    console.error('Error en createHorario:', error);
     throw error;
   }
 };
 
-// Función para obtener todos los horarios
+// Función para obtener todos los horarios disponibles
 export const getHorarios = async () => {
   try {
+    const token = await AsyncStorage.getItem('token');
     const response = await fetch(`${API_BASE_URL}/horarios`, {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${await AsyncStorage.getItem('token')}`,
+        'Authorization': `Bearer ${token}`,
       },
     });
 
     if (!response.ok) {
+      console.error('Error al obtener los horarios:', await response.text());
       throw new Error('Error al obtener los horarios');
     }
 
     return await response.json();
   } catch (error) {
-    console.error(error);
+    console.error('Error en getHorarios:', error);
     throw error;
   }
 };
-
 // Función para actualizar un horario
 export const updateHorario = async (idHorario: string, horaProgramada: string, turno: string, fechaDeEmision: string) => {
   try {
@@ -384,5 +384,125 @@ export const getSalas = async () => {
   }
 };
 
+// Función para crear una nueva entrada en la cartelera
+export const createCartelera = async (movieId, roomId, idHorario, dias) => {
+  try {
+      const token = await AsyncStorage.getItem('token');
+      const response = await fetch(`${API_BASE_URL}/cartelera`, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+              idPelicula: movieId,
+              idHorario,
+              idSala: roomId,
+              dias
+          })
+      });
+
+      const contentType = response.headers.get('Content-Type');
+
+      // Si el tipo de contenido es JSON, léelo como JSON
+      if (contentType && contentType.includes('application/json')) {
+          const data = await response.json();
+          console.log("Response Data:", data);
+          if (!response.ok) {
+              throw new Error(data.error || 'Error en la creación de la cartelera');
+          }
+          return data;
+      } else {
+          // Si el tipo de contenido no es JSON, léelo como texto
+          const responseText = await response.text();
+          console.log("Response Text:", responseText);
+          throw new Error(`Unexpected response format: ${responseText}`);
+      }
+  } catch (error) {
+      console.error('Error en createCartelera:', error);
+      throw error;
+  }
+};
+
+
+
+
+// Obtener todas las entradas en la cartelera
+export const getAllCarteleras = async () => {
+  try {
+    const token = await AsyncStorage.getItem('token');
+    const response = await fetch(`${API_BASE_URL}/cartelera`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Error al obtener la cartelera:', errorData);
+      throw new Error('Error al obtener la cartelera');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error en getAllCarteleras:', error);
+    throw error;
+  }
+};
+
+export const getCarteleraPorDia = async (dia) => {
+  try {
+    const token = await AsyncStorage.getItem('token'); // Obtén el token de autenticación
+    const response = await fetch(`https://apiboletos.onrender.com/cartelera?dia=${encodeURIComponent(dia)}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`, // Incluye el token en la cabecera
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Error en getCarteleraPorDia:', errorText);
+      throw new Error(`Error al obtener la cartelera para el día ${dia}: ${errorText}`);
+    }
+
+    if (response.headers.get('Content-Type')?.includes('application/json')) {
+      return await response.json();
+    } else {
+      const responseText = await response.text();
+      throw new Error(`Unexpected response format: ${responseText}`);
+    }
+  } catch (error) {
+    console.error('Error en getCarteleraPorDia:', error.message);
+    throw error;
+  }
+};
+
+
+// Eliminar una entrada en la cartelera
+export const deleteCartelera = async (idCartelera: string) => {
+  try {
+    const token = await AsyncStorage.getItem('token');
+    const response = await fetch(`${API_BASE_URL}/cartelera/${idCartelera}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Error al eliminar la cartelera:', errorData);
+      throw new Error('Error al eliminar la cartelera');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error en deleteCartelera:', error);
+    throw error;
+  }
+};
 
 
