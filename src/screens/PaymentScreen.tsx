@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TextInput, ScrollView, Alert } from 'react-native';
 import { Card, Input, Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -21,14 +21,44 @@ const PaymentScreen: React.FC<Props> = ({ route, navigation }) => {
   const [cvv, setCvv] = useState('');
   const [cardholderName, setCardholderName] = useState('');
 
+  const validateInputs = () => {
+    const cardNumberRegex = /^\d{16}$/;
+    const expiryDateRegex = /^(0[1-9]|1[0-2])\/\d{2}$/;
+    const cvvRegex = /^\d{3}$/;
+
+    if (!cardNumber || !cardNumberRegex.test(cardNumber)) {
+      Alert.alert('Error', 'Por favor, ingrese un número de tarjeta válido (16 dígitos).');
+      return false;
+    }
+
+    if (!expiryDate || !expiryDateRegex.test(expiryDate)) {
+      Alert.alert('Error', 'Por favor, ingrese una fecha de expiración válida (MM/AA).');
+      return false;
+    }
+
+    if (!cvv || !cvvRegex.test(cvv)) {
+      Alert.alert('Error', 'Por favor, ingrese un CVV válido (3 dígitos).');
+      return false;
+    }
+
+    if (!cardholderName) {
+      Alert.alert('Error', 'Por favor, ingrese el nombre del titular de la tarjeta.');
+      return false;
+    }
+
+    return true;
+  };
+
   const handlePayment = () => {
-    // Aquí puedes manejar la lógica de procesamiento de pagos
-    console.log('Card Number:', cardNumber);
-    console.log('Expiry Date:', expiryDate);
-    console.log('CVV:', cvv);
-    console.log('Cardholder Name:', cardholderName);
-    alert('Pago realizado con éxito');
-    navigation.navigate('Home');
+    if (validateInputs()) {
+      // Aquí puedes manejar la lógica de procesamiento de pagos
+      console.log('Card Number:', cardNumber);
+      console.log('Expiry Date:', expiryDate);
+      console.log('CVV:', cvv);
+      console.log('Cardholder Name:', cardholderName);
+      Alert.alert('Éxito', 'Pago realizado con éxito');
+      navigation.navigate('Home');
+    }
   };
 
   return (

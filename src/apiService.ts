@@ -498,4 +498,81 @@ export const deleteCartelera = async (idCartelera: string) => {
   }
 };
 
+//Actualizar asientos
+export const updateAsientos = async (asientos) => {
+  try {
+    const token = await AsyncStorage.getItem('token'); 
+    const response = await fetch(`${API_BASE_URL}/asientos/update`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(asientos),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json(); 
+      console.error('Error al actualizar los asientos:', errorData);
+      throw new Error('Error al actualizar los asientos');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error en updateAsientos:', error);
+    throw error;
+  }
+};
+
+
+export const getAsientos = async (idSala) => {
+  try {
+    const token = await AsyncStorage.getItem('token');
+    const response = await fetch(`${API_BASE_URL}/asientos/${idSala}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Error al obtener los asientos:', errorData);
+      throw new Error('Error al obtener los asientos');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error en getAsientos:', error);
+    throw error;
+  }
+};
+
+// Definir la función
+export const getAsientosBySala = async (idSalaAsiento) => {
+  try {
+    const token = await AsyncStorage.getItem('token');
+    if (!token) throw new Error('Token no disponible');
+
+    const response = await fetch(`${API_BASE_URL}/asientos?sala=${idSalaAsiento}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Error al obtener los asientos');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error en getAsientosBySala:', error);
+    throw error;
+  }
+};
+
+
 

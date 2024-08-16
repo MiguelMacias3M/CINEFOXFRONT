@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, FlatList, Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native'; // Importa el hook de navegación
 import { getCarteleraPorDia } from '../apiService'; // Importa la función desde tu apiService
 
 const CarteleraScreen = () => {
   const [selectedDay, setSelectedDay] = useState('Lunes');
   const [movies, setMovies] = useState([]);
+  const navigation = useNavigation(); // Obtén acceso a la navegación
 
   useEffect(() => {
     fetchCartelera(selectedDay);
@@ -27,6 +29,71 @@ const CarteleraScreen = () => {
     }
   };
 
+  const uniqueHorarios = (horarios) => {
+    if (!Array.isArray(horarios)) return []; // Asegurarse de que horarios sea un array
+    const seen = new Set();
+    return horarios.filter((horario) => {
+      const isDuplicate = seen.has(horario.horaProgramada);
+      seen.add(horario.horaProgramada);
+      return !isDuplicate;
+    });
+  };
+
+  const renderMovieItem = ({ item }) => {
+    if (!item.Pelicula) {
+      return null; // Si item.Pelicula es null o undefined, no renderizar nada
+    }
+
+    const imageUrl = item.Pelicula.imagenPelicula 
+      ? `https://apiboletos.onrender.com/${item.Pelicula.imagenPelicula}`
+      : null;
+
+  //  const horarios = uniqueHorarios(item.Horario || []); // Asegurarse de que Horario sea un array
+  const handlePressMovie = () => {
+    console.log("handlePressMovie - Item seleccionado:", item);
+    console.log("handlePressMovie - Horarios antes de filtrar:", item.Horario);
+  
+    // Verificar si item.Horario es un array o un objeto individual
+    const horarios = Array.isArray(item.Horario) 
+      ? uniqueHorarios(item.Horario) 
+      : item.Horario 
+        ? [item.Horario] 
+        : [];
+  
+    console.log("handlePressMovie - Horarios únicos filtrados:", horarios);
+  
+    navigation.navigate('MovieDetail', {
+      title: item.Pelicula.nombrePelicula || 'Título no disponible',
+      image: imageUrl ? { uri: imageUrl } : null,
+      description: item.Pelicula.descripcion || 'Descripción no disponible',
+      horarios: horarios.length > 0 ? horarios : ["No hay horarios disponibles"],
+    });
+  };
+  
+  
+
+
+    return (
+      <TouchableOpacity onPress={handlePressMovie}>
+        <View style={styles.card}>
+          {imageUrl ? (
+            <Image
+              source={{ uri: imageUrl }}
+              style={styles.movieImage}
+              onError={(error) => console.log('Error al cargar la imagen:', error.nativeEvent)}
+            />
+          ) : (
+            <Text style={styles.noImageText}>Imagen no disponible</Text>
+          )}
+          <View style={styles.movieInfo}>
+            <Text style={styles.movieTitle}>{item.Pelicula.nombrePelicula || 'Título no disponible'}</Text>
+            <Text style={styles.movieDescription}>{item.Pelicula.descripcion || 'Descripción no disponible'}</Text>
+          </View>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
   const renderDayItem = ({ item }) => (
     <TouchableOpacity onPress={() => setSelectedDay(item)}>
       <Text style={[styles.submenuItem, selectedDay === item && styles.selectedSubmenuItem]}>
@@ -34,30 +101,6 @@ const CarteleraScreen = () => {
       </Text>
     </TouchableOpacity>
   );
-
-  const renderMovieItem = ({ item }) => {
-    const imageUrl = item.Pelicula.imagenPelicula 
-      ? `https://apiboletos.onrender.com/${item.Pelicula.imagenPelicula}`
-      : null;
-
-    return (
-      <View style={styles.card}>
-        {imageUrl ? (
-          <Image
-            source={{ uri: imageUrl }}
-            style={styles.movieImage}
-            onError={(error) => console.log('Error al cargar la imagen:', error.nativeEvent)}
-          />
-        ) : (
-          <Text style={styles.noImageText}>Imagen no disponible</Text>
-        )}
-        <View style={styles.movieInfo}>
-          <Text style={styles.movieTitle}>{item.Pelicula.nombrePelicula || 'Título no disponible'}</Text>
-          <Text style={styles.movieDescription}>{item.Pelicula.descripcion || 'Descripción no disponible'}</Text>
-        </View>
-      </View>
-    );
-  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
