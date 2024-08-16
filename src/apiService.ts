@@ -499,3 +499,26 @@ export const deleteCartelera = async (idCartelera: string) => {
 };
 
 
+// Función para obtener los logs
+export const fetchLogs = async () => {
+  try {
+    const token = await AsyncStorage.getItem('token'); // Recuperar el token almacenado
+    const response = await fetch(`${API_BASE_URL}/logs`, { // Asumiendo que la ruta para obtener los logs es '/logs'
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Error al obtener los logs:', errorData);
+      throw new Error('Error al obtener los logs');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error en fetchLogs:', error);
+    throw error;
+  }
+};
