@@ -206,30 +206,22 @@ export const getAllPeliculas = async () => {
   }
 };
 
-export const updatePelicula = async (idPelicula: string, datosActualizados: object) => {
-  try {
-    const token = await AsyncStorage.getItem('token');
-    const response = await fetch(`${API_BASE_URL}/peliculas/${idPelicula}`, {
+export const updatePelicula = async (idPelicula: string, formData: FormData) => {
+  const response = await fetch(`https://apiboletos.onrender.com/peliculas/${idPelicula}`, {
       method: 'PUT',
+      body: formData,
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
       },
-      body: JSON.stringify(datosActualizados),
-    });
+  });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error('Error al actualizar la película:', errorData);
+  if (!response.ok) {
       throw new Error('Error al actualizar la película');
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Error en updatePelicula:', error);
-    throw error;
   }
+
+  return response.json();
 };
+
 
 
 //Eliminar peliculas
