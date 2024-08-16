@@ -453,29 +453,22 @@ export const getAllCarteleras = async () => {
 
 export const getCarteleraPorDia = async (dia) => {
   try {
-    const token = await AsyncStorage.getItem('token'); // Obtén el token de autenticación
-    const response = await fetch(`https://apiboletos.onrender.com/cartelera?dia=${encodeURIComponent(dia)}`, {
+    const token = await AsyncStorage.getItem('token'); // Recupera el token almacenado
+    const response = await fetch(`${API_BASE_URL}/cartelera/carteleraDia?dia=${encodeURIComponent(dia)}`, {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${token}`, // Incluye el token en la cabecera
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
       },
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Error en getCarteleraPorDia:', errorText);
-      throw new Error(`Error al obtener la cartelera para el día ${dia}: ${errorText}`);
+      throw new Error('Error al obtener la cartelera');
     }
 
-    if (response.headers.get('Content-Type')?.includes('application/json')) {
-      return await response.json();
-    } else {
-      const responseText = await response.text();
-      throw new Error(`Unexpected response format: ${responseText}`);
-    }
+    return await response.json();
   } catch (error) {
-    console.error('Error en getCarteleraPorDia:', error.message);
+    console.error('Error en getCarteleraPorDia:', error);
     throw error;
   }
 };

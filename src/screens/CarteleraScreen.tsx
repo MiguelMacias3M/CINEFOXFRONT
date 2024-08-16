@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, FlatList, Alert } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from '../navigation/AppNavigator';
 import { getCarteleraPorDia } from '../apiService'; // Importa la función desde tu apiService
 
 const CarteleraScreen = () => {
@@ -17,7 +15,12 @@ const CarteleraScreen = () => {
       console.log(`Fetching cartelera for day: ${day}`);
       const data = await getCarteleraPorDia(day);
       console.log('Cartelera data:', data); // Verifica los datos recibidos
-      setMovies(data);
+      if (data && Array.isArray(data)) {
+        setMovies(data);
+      } else {
+        setMovies([]);
+        console.error('La respuesta de la API no es un array o está vacía');
+      }
     } catch (error) {
       console.error('Error fetching cartelera:', error);
       Alert.alert('Error', `Error al obtener la cartelera para el día ${day}: ${error.message}`);
@@ -68,12 +71,16 @@ const CarteleraScreen = () => {
         contentContainerStyle={styles.submenu}
       />
       <Text style={styles.subtitle}>Estrenos de {selectedDay}</Text>
-      <FlatList
-        data={movies}
-        renderItem={renderMovieItem}
-        keyExtractor={(item) => item.idCartelera.toString()}
-        contentContainerStyle={styles.moviesContainer}
-      />
+      {movies.length > 0 ? (
+        <FlatList
+          data={movies}
+          renderItem={renderMovieItem}
+          keyExtractor={(item) => item.idCartelera.toString()}
+          contentContainerStyle={styles.moviesContainer}
+        />
+      ) : (
+        <Text style={styles.noMoviesText}>No hay películas disponibles para {selectedDay}</Text>
+      )}
     </ScrollView>
   );
 };
@@ -111,6 +118,12 @@ const styles = StyleSheet.create({
   },
   moviesContainer: {
     paddingBottom: 20,
+  },
+  noMoviesText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    textAlign: 'center',
+    marginTop: 20,
   },
   card: {
     backgroundColor: '#1A252F',
