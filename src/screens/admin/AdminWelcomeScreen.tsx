@@ -84,12 +84,6 @@ const AdminWelcomeScreen: React.FC<Props> = ({ route }) => {
         >
           <Text style={styles.buttonText}>Gestión de Usuarios</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.adminButton}
-          onPress={() => handleNavigation('SetRoomSchedule')}
-        >
-          <Text style={styles.buttonText}>Gestión de Horarios</Text>
-        </TouchableOpacity>
       </View>
 
       <TouchableOpacity style={styles.logoutButton} onPress={confirmLogout}>

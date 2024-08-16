@@ -1,139 +1,28 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, FlatList } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, FlatList, Alert } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
+import { getCarteleraPorDia } from '../apiService'; // Importa la función desde tu apiService
 
-type CarteleraScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Cartelera'>;
+const CarteleraScreen = () => {
+  const [selectedDay, setSelectedDay] = useState('Lunes');
+  const [movies, setMovies] = useState([]);
 
-type Props = {
-  navigation: CarteleraScreenNavigationProp;
-};
+  useEffect(() => {
+    fetchCartelera(selectedDay);
+  }, [selectedDay]);
 
-const estrenos = {
-  Lunes: [
-    {
-      title: 'Deadpool & Wolverine',
-      image: require('../assets/deadpool.jpg'),
-      description: 'Tu super heroe esta devuelta...',
-    },
-    {
-      title: 'Intensamente',
-      image: require('../assets/intensamente.jpg'),
-      description: 'Explora tu emociones...',
-    },
-    {
-      title: 'Mi villano favorito 4',
-      image: require('../assets/mivillanofavorito.jpg'),
-      description: 'Tu villano favorito volvio!!!',
-    },
-    {
-      title: 'Harold y su lapiz magico',
-      image: require('../assets/harold.jpg'),
-      description: 'Harol trasa tu mundo...',
-    },
-  ],
-  Martes: [
-    {
-      title: 'El Cadaver de la Novia',
-      image: require('../assets/elcadavernovia.jpeg'),
-      description: 'Una historia de amor más allá de la muerte...',
-    },
-    {
-      title: 'Deadpool & Wolverine',
-      image: require('../assets/deadpool.jpg'),
-      description: 'Tu super heroe esta devuelta...',
-    },
-    {
-      title: 'Harold y su lapiz magico',
-      image: require('../assets/harold.jpg'),
-      description: 'Harol trasa tu mundo...',
-    },
-  ],
-  Miércoles: [
-    {
-      title: 'Mi villano favorito 4',
-      image: require('../assets/mivillanofavorito.jpg'),
-      description: 'Tu villano favorito volvio!!!',
-    },
-    {
-      title: 'Quabtumania',
-      image: require('../assets/quabtumania.jpg'),
-      description: 'El agua en su explendor de ...',
-    },
-  ],
-  Jueves: [
-    {
-      title: 'Deadpool & Wolverine',
-      image: require('../assets/deadpool.jpg'),
-      description: 'Tu super heroe esta devuelta...',
-    },
-    {
-      title: 'Intensamente',
-      image: require('../assets/intensamente.jpg'),
-      description: 'Explora tu emociones...',
-    },
-    {
-      title: 'Mi villano favorito 4',
-      image: require('../assets/mivillanofavorito.jpg'),
-      description: 'Tu villano favorito volvio!!!',
-    },
-    {
-      title: 'Harold y su lapiz magico',
-      image: require('../assets/harold.jpg'),
-      description: 'Harol trasa tu mundo...',
-    },
-  ],
-  Viernes: [
-    {
-      title: 'Deadpool & Wolverine',
-      image: require('../assets/deadpool.jpg'),
-      description: 'Tu super heroe esta devuelta...',
-    },
-    {
-      title: 'Intensamente',
-      image: require('../assets/intensamente.jpg'),
-      description: 'Explora tu emociones...',
-    },
-    {
-      title: 'Mi villano favorito 4',
-      image: require('../assets/mivillanofavorito.jpg'),
-      description: 'Tu villano favorito volvio!!!',
-    },
-    {
-      title: 'Harold y su lapiz magico',
-      image: require('../assets/harold.jpg'),
-      description: 'Harol trasa tu mundo...',
-    },
-  ],
-  Sábado: [
-    {
-      title: 'Deadpool & Wolverine',
-      image: require('../assets/deadpool.jpg'),
-      description: 'Tu super heroe esta devuelta...',
-    },
-    {
-      title: 'Intensamente',
-      image: require('../assets/intensamente.jpg'),
-      description: 'Explora tu emociones...',
-    },
-    {
-      title: 'Mi villano favorito 4',
-      image: require('../assets/mivillanofavorito.jpg'),
-      description: 'Tu villano favorito volvio!!!',
-    },
-    {
-      title: 'Harold y su lapiz magico',
-      image: require('../assets/harold.jpg'),
-      description: 'Harol trasa tu mundo...',
-    },
-  ],
-  Domingo: [],
-};
-
-const daysOfWeek = Object.keys(estrenos);
-
-const CarteleraScreen: React.FC<Props> = ({ navigation }) => {
-  const [selectedDay, setSelectedDay] = useState<string>(daysOfWeek[0]);
+  const fetchCartelera = async (day) => {
+    try {
+      console.log(`Fetching cartelera for day: ${day}`);
+      const data = await getCarteleraPorDia(day);
+      console.log('Cartelera data:', data); // Verifica los datos recibidos
+      setMovies(data);
+    } catch (error) {
+      console.error('Error fetching cartelera:', error);
+      Alert.alert('Error', `Error al obtener la cartelera para el día ${day}: ${error.message}`);
+    }
+  };
 
   const renderDayItem = ({ item }) => (
     <TouchableOpacity onPress={() => setSelectedDay(item)}>
@@ -143,41 +32,48 @@ const CarteleraScreen: React.FC<Props> = ({ navigation }) => {
     </TouchableOpacity>
   );
 
-  const handlePressMovie = (movie) => {
-    navigation.navigate('MovieDetail', movie);
-  };
+  const renderMovieItem = ({ item }) => {
+    const imageUrl = item.Pelicula.imagenPelicula 
+      ? `https://apiboletos.onrender.com/${item.Pelicula.imagenPelicula}`
+      : null;
 
-  const renderMovieItem = (movie, index) => (
-    <TouchableOpacity key={index} onPress={() => handlePressMovie(movie)}>
+    return (
       <View style={styles.card}>
-        <Image source={movie.image} style={styles.movieImage} />
+        {imageUrl ? (
+          <Image
+            source={{ uri: imageUrl }}
+            style={styles.movieImage}
+            onError={(error) => console.log('Error al cargar la imagen:', error.nativeEvent)}
+          />
+        ) : (
+          <Text style={styles.noImageText}>Imagen no disponible</Text>
+        )}
         <View style={styles.movieInfo}>
-          <Text style={styles.movieTitle}>{movie.title}</Text>
-          <Text style={styles.movieDescription}>{movie.description}</Text>
+          <Text style={styles.movieTitle}>{item.Pelicula.nombrePelicula || 'Título no disponible'}</Text>
+          <Text style={styles.movieDescription}>{item.Pelicula.descripcion || 'Descripción no disponible'}</Text>
         </View>
       </View>
-    </TouchableOpacity>
-  );
+    );
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.welcomeSubtitle}>Bienvenido a la cartelera de Cine-Fox</Text>
       <FlatList
         horizontal
-        data={daysOfWeek}
+        data={['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']}
         renderItem={renderDayItem}
         keyExtractor={(item) => item}
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.submenu}
       />
       <Text style={styles.subtitle}>Estrenos de {selectedDay}</Text>
-      <View style={styles.moviesContainer}>
-        {estrenos[selectedDay] && estrenos[selectedDay].length > 0 ? (
-          estrenos[selectedDay].map(renderMovieItem)
-        ) : (
-          <Text style={styles.noMoviesText}>No hay estrenos para este día.</Text>
-        )}
-      </View>
+      <FlatList
+        data={movies}
+        renderItem={renderMovieItem}
+        keyExtractor={(item) => item.idCartelera.toString()}
+        contentContainerStyle={styles.moviesContainer}
+      />
     </ScrollView>
   );
 };
@@ -214,8 +110,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   moviesContainer: {
-    flexGrow: 1,
-    justifyContent: 'center',
+    paddingBottom: 20,
   },
   card: {
     backgroundColor: '#1A252F',
@@ -231,6 +126,12 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginRight: 10,
   },
+  noImageText: {
+    color: '#BBBBBB',
+    fontSize: 14,
+    textAlign: 'center',
+    marginBottom: 10,
+  },
   movieInfo: {
     flex: 1,
   },
@@ -243,12 +144,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#BBBBBB',
     marginTop: 5,
-  },
-  noMoviesText: {
-    fontSize: 16,
-    color: '#FFFFFF',
-    textAlign: 'center',
-    marginTop: 10,
   },
 });
 

@@ -1,153 +1,136 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, Alert, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
-import { createHorario, getHorarios, updateHorario, deleteHorario } from '../../apiService';
+import { Picker } from '@react-native-picker/picker';
+import CheckBox from '@react-native-community/checkbox';
+import { getHorarios, createCartelera } from '../../apiService';
+import { View, Text, StyleSheet, Button, FlatList, TouchableOpacity, Alert, ScrollView } from 'react-native';
 
-const SetRoomScheduleScreen = () => {
-  const [horaProgramada, setHoraProgramada] = useState('');
-  const [turno, setTurno] = useState('');
-  const [fechaDeEmision, setFechaDeEmision] = useState('');
-  const [horarios, setHorarios] = useState([]);
+
+const daysOfWeek = [
+  { label: 'Lunes', value: 'Lunes' },
+  { label: 'Martes', value: 'Martes' },
+  { label: 'Miércoles', value: 'Miércoles' },
+  { label: 'Jueves', value: 'Jueves' },
+  { label: 'Viernes', value: 'Viernes' },
+  { label: 'Sábado', value: 'Sábado' },
+  { label: 'Domingo', value: 'Domingo' }
+];
+
+const SetRoomScheduleScreen = ({ route, navigation }) => {
+  const { movieId, roomId } = route.params;
   const [selectedHorario, setSelectedHorario] = useState(null);
+  const [availableHorarios, setAvailableHorarios] = useState([]);
+  const [selectedDays, setSelectedDays] = useState([]);
 
   useEffect(() => {
-    fetchHorarios();
+      fetchHorarios();
   }, []);
 
   const fetchHorarios = async () => {
-    try {
-      const data = await getHorarios();
-      setHorarios(data);
-    } catch (error) {
-      Alert.alert('Error', 'No se pudieron cargar los horarios');
-    }
+      try {
+          const horarios = await getHorarios();
+          setAvailableHorarios(horarios);
+      } catch (error) {
+          console.error('Error al obtener horarios:', error);
+          Alert.alert('Error', 'No se pudieron cargar los horarios');
+      }
+  };
+
+  const toggleDaySelection = (day) => {
+      if (selectedDays.includes(day)) {
+          setSelectedDays(selectedDays.filter(d => d !== day));
+      } else {
+          setSelectedDays([...selectedDays, day]);
+      }
   };
 
   const handleSubmit = async () => {
-    try {
-      const horarioData = {
-        horaProgramada,  // Asegúrate de que este valor sea un string en formato "HH:MM:SS"
-        turno,           // Asegúrate de que este valor sea un string (mañana, tarde, noche)
-        fechaDeEmision,  // Asegúrate de que este valor sea un string en formato "YYYY-MM-DD"
-      };
-  
-      if (selectedHorario) {
-        // Si hay un horario seleccionado, actualizar
-        await updateHorario(selectedHorario.idHorario, horarioData.horaProgramada, horarioData.turno, horarioData.fechaDeEmision);
-        Alert.alert('Éxito', 'Horario actualizado correctamente');
-      } else {
-        // Si no, crear uno nuevo
-        await createHorario(horarioData.horaProgramada, horarioData.turno, horarioData.fechaDeEmision);
-        Alert.alert('Éxito', 'Horario creado correctamente');
-      }
-  
-      fetchHorarios(); // Refrescar la lista de horarios
-      clearForm();
-    } catch (error) {
-      Alert.alert('Error', 'No se pudo gestionar el horario');
+    if (!selectedHorario || selectedDays.length === 0) {
+        Alert.alert('Error', 'Debe seleccionar al menos un horario y un día');
+        return;
     }
-  };
-  
 
-  const handleDelete = async (idHorario) => {
     try {
-      await deleteHorario(idHorario);
-      Alert.alert('Éxito', 'Horario eliminado correctamente');
-      fetchHorarios(); // Refrescar la lista de horarios
+        console.log("Días seleccionados:", selectedDays); // Mostrar los días seleccionados en la consola
+        
+        // Enviar todos los días en una sola solicitud
+        const response = await createCartelera(movieId, roomId, selectedHorario, selectedDays);
+        console.log('Datos enviados:', {
+            movieId,
+            roomId,
+            selectedHorario,
+            selectedDays
+        });
+
+        Alert.alert('Éxito', 'Cartelera creada correctamente');
+        navigation.goBack(); // Regresa a la pantalla anterior después de crear la cartelera
     } catch (error) {
-      Alert.alert('Error', 'No se pudo eliminar el horario');
+        console.error('Error en handleSubmit:', error);
+        Alert.alert('Error', 'No se pudo crear la cartelera');
     }
-  };
+};
 
-  const handleEdit = (horario) => {
-    setSelectedHorario(horario);
-    setHoraProgramada(horario.horaProgramada);
-    setTurno(horario.turno);
-    setFechaDeEmision(horario.fechaDeEmision);
-  };
 
-  const clearForm = () => {
-    setHoraProgramada('');
-    setTurno('');
-    setFechaDeEmision('');
-    setSelectedHorario(null);
-  };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Gestión de Horarios</Text>
+      <View style={styles.container}>
+          <Text style={styles.title}>Selecciona un Horario y Días</Text>
 
-      <TextInput
-        style={styles.input}
-        value={horaProgramada}
-        onChangeText={setHoraProgramada}
-        placeholder="Hora Programada (HH:MM:SS)"
-      />
+          <Text style={styles.label}>Horario:</Text>
+          <Picker
+              selectedValue={selectedHorario}
+              onValueChange={(itemValue) => setSelectedHorario(itemValue)}
+              style={styles.picker}
+          >
+              <Picker.Item label="Selecciona un horario" value={null} />
+              {availableHorarios.map((horario) => (
+                  <Picker.Item
+                      key={horario.idHorario}
+                      label={`${horario.horaProgramada}`}
+                      value={horario.idHorario}
+                  />
+              ))}
+          </Picker>
 
-      <TextInput
-        style={styles.input}
-        value={turno}
-        onChangeText={setTurno}
-        placeholder="Turno (mañana, tarde, noche)"
-      />
+          <Text style={styles.label}>Días:</Text>
+          {daysOfWeek.map((day) => (
+              <View key={day.value} style={styles.dayContainer}>
+                  <CheckBox
+                      value={selectedDays.includes(day.value)}
+                      onValueChange={() => toggleDaySelection(day.value)}
+                  />
+                  <Text>{day.label}</Text>
+              </View>
+          ))}
 
-      <TextInput
-        style={styles.input}
-        value={fechaDeEmision}
-        onChangeText={setFechaDeEmision}
-        placeholder="Fecha de Emisión (YYYY-MM-DD)"
-      />
-
-      <Button title={selectedHorario ? "Actualizar Horario" : "Crear Horario"} onPress={handleSubmit} />
-
-      <FlatList
-        data={horarios}
-        keyExtractor={(item) => item.idHorario.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.horarioItem}>
-            <Text>{`Hora: ${item.horaProgramada}, Turno: ${item.turno}, Fecha: ${item.fechaDeEmision}`}</Text>
-            <TouchableOpacity onPress={() => handleEdit(item)}>
-              <Text style={styles.editButton}>Editar</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleDelete(item.idHorario)}>
-              <Text style={styles.deleteButton}>Eliminar</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-      />
-    </View>
+          <Button title="Registrar Cartelera" onPress={handleSubmit} />
+      </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: '#fff',
+      flex: 1,
+      padding: 20,
+      backgroundColor: '#fff',
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
+      fontSize: 24,
+      fontWeight: 'bold',
+      marginBottom: 20,
   },
-  input: {
-    borderColor: '#ccc',
-    borderWidth: 1,
-    padding: 10,
-    marginBottom: 15,
-    borderRadius: 5,
+  label: {
+      fontSize: 18,
+      marginBottom: 10,
   },
-  horarioItem: {
-    padding: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  picker: {
+      height: 50,
+      width: '100%',
+      marginBottom: 20,
   },
-  editButton: {
-    color: 'blue',
-  },
-  deleteButton: {
-    color: 'red',
+  dayContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 10,
   },
 });
 
