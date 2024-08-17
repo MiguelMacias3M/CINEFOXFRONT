@@ -1,66 +1,52 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { RouteProp } from '@react-navigation/native';
-import { RootStackParamList } from '../../navigation/AppNavigator';
-import { updatePelicula } from '../../apiService';
+import { View, Text, TextInput, Button, Alert, StyleSheet, Image } from 'react-native';
+import { launchImageLibrary } from 'react-native-image-picker'; // Importa la función para seleccionar imágenes
+import { updatePelicula } from '../../apiService'; // Ajusta la ruta de importación según tu estructura
 
-type EditMovieScreenNavigationProp = StackNavigationProp<RootStackParamList, 'EditMovie'>;
-type EditMovieScreenRouteProp = RouteProp<RootStackParamList, 'EditMovie'>;
+const EditMovieScreen = ({ route, navigation }) => {
+  const { movie } = route.params;
+  
+  const [nombrePelicula, setNombrePelicula] = useState(movie.nombrePelicula);
+  const [directorPelicula, setDirectorPelicula] = useState(movie.directorPelicula);
+  const [duracionPelicula, setDuracionPelicula] = useState(movie.duracionPelicula);
+  const [actoresPelicula, setActoresPelicula] = useState(movie.actoresPelicula);
+  const [clasificacionPelicula, setClasificacionPelicula] = useState(movie.clasificacionPelicula);
+  const [precioBoleto, setPrecioBoleto] = useState(movie.precioBoleto);
+  const [imagenPelicula, setImagenPelicula] = useState(null);
 
-type Props = {
-  navigation: EditMovieScreenNavigationProp;
-  route: EditMovieScreenRouteProp;
-};
-
-const EditMovieScreen: React.FC<Props> = ({ navigation, route }) => {
-  const { movieId, nombrePelicula, descripcion, fechaDeEmision, horaProgramada, turno } = route.params;
-
-  const [titulo, setTitulo] = useState('');
-  const [descripcionPelicula, setDescripcionPelicula] = useState('');
-  const [fecha, setFecha] = useState('');
-  const [hora, setHora] = useState('');
-  const [turnoPelicula, setTurnoPelicula] = useState('');
-
-  // UseEffect para cargar los valores cuando la pantalla se monta
-  useEffect(() => {
-    console.log('Datos recibidos en EditMovieScreen:', {
-      nombrePelicula,
-      descripcion,
-      fechaDeEmision, 
-      horaProgramada,
-      turno,
+  const handleImagePick = () => {
+    launchImageLibrary({ mediaType: 'photo' }, (response) => {
+      if (response.didCancel) {
+        // El usuario canceló la selección de imagen
+      } else if (response.errorCode) {
+        Alert.alert('Error', 'Error al seleccionar la imagen');
+      } else {
+        setImagenPelicula(response.assets[0]); // Asume que la primera imagen es la seleccionada
+      }
     });
-  
-    setTitulo(nombrePelicula);
-    setDescripcionPelicula(descripcion);
-    setFecha(fechaDeEmision);
-    setHora(horaProgramada);
-    setTurnoPelicula(turno);
-  
-    console.log('Estados actualizados:', {
-      titulo,
-      descripcionPelicula,
-      fecha,
-      hora,
-      turnoPelicula,
-    });
-  }, [nombrePelicula, descripcion, fechaDeEmision, horaProgramada, turno]);
-  
+  };
 
-  const handleUpdateMovie = async () => {
+  const handleSubmit = async () => {
     try {
-      const updatedData = {
-        nombrePelicula: titulo,
-        descripcion: descripcionPelicula,
-        fechaDeEmision: fecha,
-        horaProgramada: hora,
-        turno: turnoPelicula,
-      };
+      const formData = new FormData();
+      formData.append('nombrePelicula', nombrePelicula);
+      formData.append('directorPelicula', directorPelicula);
+      formData.append('duracionPelicula', duracionPelicula);
+      formData.append('actoresPelicula', actoresPelicula);
+      formData.append('clasificacionPelicula', clasificacionPelicula);
+      formData.append('precioBoleto', precioBoleto);
 
-      await updatePelicula(movieId, updatedData);
+      if (imagenPelicula) {
+        formData.append('imagenPelicula', {
+          uri: imagenPelicula.uri,
+          type: imagenPelicula.type,
+          name: imagenPelicula.fileName,
+        });
+      }
+
+      await updatePelicula(movie.idPelicula, formData);
       Alert.alert('Éxito', 'Película actualizada correctamente');
-      navigation.goBack(); // Regresar a la pantalla anterior
+      navigation.goBack(); // Regresar a la pantalla anterior después de actualizar la película
     } catch (error) {
       Alert.alert('Error', 'No se pudo actualizar la película');
     }
@@ -69,37 +55,60 @@ const EditMovieScreen: React.FC<Props> = ({ navigation, route }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Editar Película</Text>
+
       <TextInput
         style={styles.input}
-        placeholder="Título"
-        value={titulo}
-        onChangeText={setTitulo}
+        placeholder="Nombre de la Película"
+        value={nombrePelicula}
+        onChangeText={setNombrePelicula}
       />
+
       <TextInput
         style={styles.input}
-        placeholder="Descripción"
-        value={descripcionPelicula}
-        onChangeText={setDescripcionPelicula}
+        placeholder="Director"
+        value={directorPelicula}
+        onChangeText={setDirectorPelicula}
       />
+
       <TextInput
         style={styles.input}
-        placeholder="Fecha de Emisión"
-        value={fecha}
-        onChangeText={setFecha}
+        placeholder="Duración (minutos)"
+        value={duracionPelicula}
+        onChangeText={setDuracionPelicula}
+        keyboardType="numeric"
       />
+
       <TextInput
         style={styles.input}
-        placeholder="Hora Programada"
-        value={hora}
-        onChangeText={setHora}
+        placeholder="Actores"
+        value={actoresPelicula}
+        onChangeText={setActoresPelicula}
       />
+
       <TextInput
         style={styles.input}
-        placeholder="Turno"
-        value={turnoPelicula}
-        onChangeText={setTurnoPelicula}
+        placeholder="Clasificación"
+        value={clasificacionPelicula}
+        onChangeText={setClasificacionPelicula}
       />
-      <Button title="Actualizar Película" onPress={handleUpdateMovie} color="#E50914" />
+
+      <TextInput
+        style={styles.input}
+        placeholder="Precio del Boleto"
+        value={precioBoleto}
+        onChangeText={setPrecioBoleto}
+        keyboardType="numeric"
+      />
+
+      <Button title="Seleccionar Imagen" onPress={handleImagePick} />
+      {imagenPelicula && (
+        <Image
+          source={{ uri: imagenPelicula.uri }}
+          style={styles.image}
+        />
+      )}
+
+      <Button title="Actualizar Película" onPress={handleSubmit} />
     </View>
   );
 };
@@ -108,21 +117,25 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#2D3E50',
+    backgroundColor: '#fff',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#FFFFFF',
     marginBottom: 20,
-    textAlign: 'center',
   },
   input: {
-    height: 50,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 5,
-    paddingHorizontal: 10,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    padding: 10,
     marginBottom: 15,
+    borderRadius: 5,
+  },
+  image: {
+    width: 100,
+    height: 100,
+    resizeMode: 'cover',
+    marginVertical: 10,
   },
 });
 

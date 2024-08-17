@@ -17,6 +17,7 @@ import SetRoomScheduleScreen from '../screens/admin/SetRoomScheduleScreen';
 import MovieFormScreen from '../screens/admin/MovieFormScreen';
 import AdminRegistrationScreen from '../screens/admin/AdminRegistrationScreen';
 import EditMovieScreen from '../screens/admin/EditMovieScreen';
+import LogsScreen from '../screens/admin/LogsScreen';
 
 export type RootStackParamList = {
   Home: undefined;
@@ -35,6 +36,7 @@ export type RootStackParamList = {
   MovieForm: undefined; // Pantalla para agregar nuevas películas
   AdminRegistration: undefined; // Pantalla para registrar administradores
   EditMovie: { movieId: string; nombrePelicula: string; descripcion: string; fechaDeEmision: string; horaProgramada: string; turno: string; }; // Pantalla para editar películas
+  Logs: undefined; 
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -59,6 +61,7 @@ const AppNavigator: React.FC = () => {
         <Stack.Screen name="MovieForm" component={MovieFormScreen} />
         <Stack.Screen name="AdminRegistration" component={AdminRegistrationScreen} />
         <Stack.Screen name="EditMovie" component={EditMovieScreen} />
+        <Stack.Screen name="Logs" component={LogsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

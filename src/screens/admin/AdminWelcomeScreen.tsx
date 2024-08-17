@@ -1,21 +1,34 @@
-import React, { useCallback } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, BackHandler } from 'react-native';
-import { RouteProp, useFocusEffect } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from '../../navigation/AppNavigator';
-import { logoutUsuario } from '../../apiService';
-import { useNavigation } from '@react-navigation/native';
+import React, {useCallback} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+  BackHandler,
+} from 'react-native';
+import {RouteProp, useFocusEffect} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {RootStackParamList} from '../../navigation/AppNavigator';
+import {logoutUsuario} from '../../apiService';
+import {useNavigation} from '@react-navigation/native';
 
-type AdminWelcomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'AdminWelcome'>;
-type AdminWelcomeScreenRouteProp = RouteProp<RootStackParamList, 'AdminWelcome'>;
+type AdminWelcomeScreenNavigationProp = StackNavigationProp<
+  RootStackParamList,
+  'AdminWelcome'
+>;
+type AdminWelcomeScreenRouteProp = RouteProp<
+  RootStackParamList,
+  'AdminWelcome'
+>;
 
 type Props = {
   navigation: AdminWelcomeScreenNavigationProp;
   route: AdminWelcomeScreenRouteProp;
 };
 
-const AdminWelcomeScreen: React.FC<Props> = ({ route }) => {
-  const { adminName } = route.params;
+const AdminWelcomeScreen: React.FC<Props> = ({route}) => {
+  const {adminName} = route.params;
   const navigation = useNavigation<AdminWelcomeScreenNavigationProp>();
 
   const handleLogout = async () => {
@@ -43,7 +56,7 @@ const AdminWelcomeScreen: React.FC<Props> = ({ route }) => {
           onPress: handleLogout,
         },
       ],
-      { cancelable: false }
+      {cancelable: false},
     );
   };
 
@@ -63,7 +76,7 @@ const AdminWelcomeScreen: React.FC<Props> = ({ route }) => {
       return () => {
         BackHandler.removeEventListener('hardwareBackPress', onBackPress);
       };
-    }, [])
+    }, []),
   );
 
   return (
@@ -74,15 +87,18 @@ const AdminWelcomeScreen: React.FC<Props> = ({ route }) => {
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.adminButton}
-          onPress={() => handleNavigation('MovieManagement')}
-        >
+          onPress={() => handleNavigation('MovieManagement')}>
           <Text style={styles.buttonText}>Gestión de Películas</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.adminButton}
-          onPress={() => handleNavigation('AdminRegistration')}
-        >
+          onPress={() => handleNavigation('AdminRegistration')}>
           <Text style={styles.buttonText}>Gestión de Usuarios</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.adminButton}
+          onPress={() => handleNavigation('Logs')}>
+          <Text style={styles.buttonText}>Ver Logs del Sistema</Text>
         </TouchableOpacity>
       </View>
 
