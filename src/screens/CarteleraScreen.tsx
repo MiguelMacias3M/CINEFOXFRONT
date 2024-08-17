@@ -48,30 +48,27 @@ const CarteleraScreen = () => {
       ? `https://apiboletos.onrender.com/${item.Pelicula.imagenPelicula}`
       : null;
 
-  //  const horarios = uniqueHorarios(item.Horario || []); // Asegurarse de que Horario sea un array
-  const handlePressMovie = () => {
-    console.log("handlePressMovie - Item seleccionado:", item);
-    console.log("handlePressMovie - Horarios antes de filtrar:", item.Horario);
-  
-    // Verificar si item.Horario es un array o un objeto individual
-    const horarios = Array.isArray(item.Horario) 
-      ? uniqueHorarios(item.Horario) 
-      : item.Horario 
-        ? [item.Horario] 
-        : [];
-  
-    console.log("handlePressMovie - Horarios únicos filtrados:", horarios);
-  
-    navigation.navigate('MovieDetail', {
-      title: item.Pelicula.nombrePelicula || 'Título no disponible',
-      image: imageUrl ? { uri: imageUrl } : null,
-      description: item.Pelicula.descripcion || 'Descripción no disponible',
-      horarios: horarios.length > 0 ? horarios : ["No hay horarios disponibles"],
-    });
-  };
-  
-  
-
+      const handlePressMovie = () => {
+        console.log("handlePressMovie - Item seleccionado:", item);
+        console.log("handlePressMovie - Horarios antes de filtrar:", item.Horario);
+        
+        // Verificar si item.Horario es un array o un objeto individual
+        const horarios = Array.isArray(item.Horario) 
+          ? uniqueHorarios(item.Horario) 
+          : item.Horario 
+            ? [item.Horario] 
+            : [];
+      
+        console.log("handlePressMovie - Horarios únicos filtrados:", horarios);
+      
+        navigation.navigate('MovieDetail', {
+          title: item.Pelicula.nombrePelicula || 'Título no disponible',
+          image: imageUrl ? { uri: imageUrl } : null,
+          description: item.Pelicula.descripcion || 'Descripción no disponible',
+          horarios: horarios.length > 0 ? horarios : ["No hay horarios disponibles"],
+          sala: item.Sala.nombreSala || 'Sala no disponible', // Asegúrate de pasar la sala aquí
+        });
+      };
 
     return (
       <TouchableOpacity onPress={handlePressMovie}>

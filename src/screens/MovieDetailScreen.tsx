@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Alert } from 'react-native';
 
 const MovieDetailScreen = ({ route, navigation }) => {
-  const { title, image, description, horarios } = route.params;
+  const { title, image, description, horarios, sala } = route.params;
   const [selectedHorario, setSelectedHorario] = useState<string | null>(null);
   const [tickets, setTickets] = useState(1);
 
@@ -27,6 +27,7 @@ const MovieDetailScreen = ({ route, navigation }) => {
     console.log("MovieDetailScreen - image:", image);
     console.log("MovieDetailScreen - description:", description);
     console.log("MovieDetailScreen - horarios:", availableHorarios);
+    console.log("MovieDetailScreen - sala:", sala || 'Sala no disponible');
   }, []);
 
   const renderHorario = (horario) => (
@@ -77,6 +78,7 @@ const MovieDetailScreen = ({ route, navigation }) => {
       )}
       <Text style={styles.movieTitle}>{title}</Text>
       <Text style={styles.movieDescription}>{description}</Text>
+      <Text style={styles.subtitle}>Sala: {sala || 'Sala no disponible'}</Text>
       <Text style={styles.subtitle}>Horarios Disponibles</Text>
       <View style={styles.horariosContainer}>
         {availableHorarios.map(renderHorario)}
