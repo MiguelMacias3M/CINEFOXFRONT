@@ -61,8 +61,6 @@ const SeatSelectionScreen: React.FC<Props> = ({ route, navigation }) => {
         );
         return {
           idAsiento: asiento.idAsiento,
-          filaAsiento: asiento.filaAsiento,
-          idSalaAsiento: asiento.idSalaAsiento,
           estadoAsiento: 'ocupado'
         };
       });
@@ -99,7 +97,13 @@ const SeatSelectionScreen: React.FC<Props> = ({ route, navigation }) => {
               disabled={seat.estadoAsiento === 'ocupado'}
             >
               <Image
-                source={selectedSeats.includes(`${seat.filaAsiento}-${seat.numeroAsiento}`) ? require('../assets/asientoRojo.png') : require('../assets/asientoBlanco.png')}
+                source={
+                  seat.estadoAsiento === 'ocupado' 
+                    ? require('../assets/asientoRojo.png') 
+                    : selectedSeats.includes(`${seat.filaAsiento}-${seat.numeroAsiento}`)
+                      ? require('../assets/asientoRojo.png') 
+                      : require('../assets/asientoBlanco.png')
+                }
                 style={styles.seatImage}
               />
             </TouchableOpacity>

@@ -497,36 +497,35 @@ export const deleteCartelera = async (idCartelera: string) => {
 //Actualizar asientos
 export const updateAsientos = async (asientos) => {
   try {
-    // Extraer solo los campos necesarios
-    const asientosSimplificados = asientos.map(asiento => ({
-      idAsiento: asiento.idAsiento,
-      estadoAsiento: asiento.estadoAsiento,
-    }));
-
-    console.log('Enviando asientos para actualizar:', asientosSimplificados);
-
     const token = await AsyncStorage.getItem('token');
-    const response = await fetch(`${API_BASE_URL}/asientos`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-      body: JSON.stringify(asientosSimplificados),
-    });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error('Error al actualizar los asientos:', errorData);
-      throw new Error(errorData.message || 'Error al actualizar los asientos');
+    for (const asiento of asientos) {
+      console.log('Enviando asiento para actualizar:', asiento);
+
+      const response = await fetch(`${API_BASE_URL}/asientos`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(asiento),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Error al actualizar el asiento:', errorData);
+        throw new Error(errorData.message || 'Error al actualizar el asiento');
+      }
     }
 
-    return await response.json();
+    return true;
   } catch (error) {
     console.error('Error en updateAsientos:', error);
     throw error;
   }
 };
+
+
 
 
 
