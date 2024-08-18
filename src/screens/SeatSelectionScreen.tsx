@@ -101,7 +101,7 @@ const SeatSelectionScreen: React.FC<Props> = ({ route, navigation }) => {
                   seat.estadoAsiento === 'ocupado' 
                     ? require('../assets/asientoRojo.png') 
                     : selectedSeats.includes(`${seat.filaAsiento}-${seat.numeroAsiento}`)
-                      ? require('../assets/asientoRojo.png') 
+                      ? require('../assets/asientoAnaranjado.png') 
                       : require('../assets/asientoBlanco.png')
                 }
                 style={styles.seatImage}
