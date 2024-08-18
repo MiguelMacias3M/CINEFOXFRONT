@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Alert, Modal } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
-import { getAllAsientos } from '../apiService'; // Asegúrate de que esta ruta sea correcta
+import { getAsientosBySala, updateAsientos } from '../apiService'; // Asegúrate de tener la función updateAsientos
 import { RootStackParamList } from '../navigation/AppNavigator';
 
 type SeatSelectionScreenNavigationProp = StackNavigationProp<RootStackParamList, 'SeatSelection'>;
@@ -14,7 +14,7 @@ type Props = {
 };
 
 const SeatSelectionScreen: React.FC<Props> = ({ route, navigation }) => {
-  const { title, horario, tickets } = route.params;
+  const { title, horario, tickets, idSala } = route.params;
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
   const [availableSeats, setAvailableSeats] = useState<any[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
@@ -22,18 +22,19 @@ const SeatSelectionScreen: React.FC<Props> = ({ route, navigation }) => {
   useEffect(() => {
     const fetchAsientos = async () => {
       try {
-        console.log("Iniciando fetchAllAsientos...");
-        const asientos = await getAllAsientos();
+        console.log("Iniciando fetchAsientosBySala...");
+        const asientos = await getAsientosBySala(idSala);
         console.log("Asientos recibidos:", asientos);
+
         setAvailableSeats(asientos);
       } catch (error) {
-        console.error("Error al obtener todos los asientos:", error);
+        console.error("Error al obtener los asientos:", error);
         Alert.alert('Error', 'No se pudieron cargar los asientos');
       }
     };
 
     fetchAsientos();
-  }, []);
+  }, [idSala]);
 
   const toggleSeatSelection = (seat: any) => {
     const seatLabel = `${seat.filaAsiento}-${seat.numeroAsiento}`;
@@ -44,15 +45,37 @@ const SeatSelectionScreen: React.FC<Props> = ({ route, navigation }) => {
         setSelectedSeats([...selectedSeats, seatLabel]);
       } else {
         const newSelectedSeats = [...selectedSeats];
-        newSelectedSeats.shift(); // Elimina el asiento más antiguo
-        newSelectedSeats.push(seatLabel); // Añade el nuevo asiento
+        newSelectedSeats.shift();
+        newSelectedSeats.push(seatLabel);
         setSelectedSeats(newSelectedSeats);
       }
     }
   };
 
-  const handleConfirm = () => {
-    setModalVisible(true);
+  const handleConfirm = async () => {
+    try {
+      const asientosParaActualizar = selectedSeats.map(seatLabel => {
+        const [filaAsiento, numeroAsiento] = seatLabel.split('-');
+        const asiento = availableSeats.find(asiento => 
+          asiento.filaAsiento === filaAsiento && asiento.numeroAsiento === parseInt(numeroAsiento)
+        );
+        return {
+          idAsiento: asiento.idAsiento,
+          filaAsiento: asiento.filaAsiento,
+          idSalaAsiento: asiento.idSalaAsiento,
+          estadoAsiento: 'ocupado'
+        };
+      });
+
+      console.log("Enviando asientos para actualizar:", asientosParaActualizar);
+      await updateAsientos(asientosParaActualizar);
+
+      Alert.alert('Éxito', 'Asientos actualizados correctamente');
+      setModalVisible(true);
+    } catch (error) {
+      console.error("Error al actualizar los asientos:", error);
+      Alert.alert('Error', 'No se pudieron actualizar los asientos');
+    }
   };
 
   const handleProceedToPayment = () => {
@@ -69,7 +92,7 @@ const SeatSelectionScreen: React.FC<Props> = ({ route, navigation }) => {
       </View>
       <View style={styles.seatContainer}>
         {availableSeats.map(seat => (
-          <View key={`${seat.filaAsiento}-${seat.numeroAsiento}`} style={styles.seatWrapper}>
+          <View key={`${seat.idSalaAsiento}-${seat.filaAsiento}-${seat.numeroAsiento}`} style={styles.seatWrapper}>
             <TouchableOpacity
               style={styles.seat}
               onPress={() => toggleSeatSelection(seat)}

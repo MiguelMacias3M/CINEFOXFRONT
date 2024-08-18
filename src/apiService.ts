@@ -497,20 +497,28 @@ export const deleteCartelera = async (idCartelera: string) => {
 //Actualizar asientos
 export const updateAsientos = async (asientos) => {
   try {
-    const token = await AsyncStorage.getItem('token'); 
-    const response = await fetch(`${API_BASE_URL}/asientos/update`, {
+    // Extraer solo los campos necesarios
+    const asientosSimplificados = asientos.map(asiento => ({
+      idAsiento: asiento.idAsiento,
+      estadoAsiento: asiento.estadoAsiento,
+    }));
+
+    console.log('Enviando asientos para actualizar:', asientosSimplificados);
+
+    const token = await AsyncStorage.getItem('token');
+    const response = await fetch(`${API_BASE_URL}/asientos`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
       },
-      body: JSON.stringify(asientos),
+      body: JSON.stringify(asientosSimplificados),
     });
 
     if (!response.ok) {
-      const errorData = await response.json(); 
+      const errorData = await response.json();
       console.error('Error al actualizar los asientos:', errorData);
-      throw new Error('Error al actualizar los asientos');
+      throw new Error(errorData.message || 'Error al actualizar los asientos');
     }
 
     return await response.json();
@@ -519,6 +527,9 @@ export const updateAsientos = async (asientos) => {
     throw error;
   }
 };
+
+
+
 
 
 export const getAsientos = async (idSala) => {
@@ -545,6 +556,7 @@ export const getAsientos = async (idSala) => {
 };
 
 // Definir la función
+// Definir la función para obtener asientos filtrados por sala
 export const getAsientosBySala = async (idSalaAsiento) => {
   try {
     const token = await AsyncStorage.getItem('token');
@@ -563,12 +575,18 @@ export const getAsientosBySala = async (idSalaAsiento) => {
       throw new Error(errorData.message || 'Error al obtener los asientos');
     }
 
-    return await response.json();
+    // Asegurarse de filtrar los asientos aquí si la API no lo hace automáticamente
+    const asientos = await response.json();
+    return asientos.filter(asiento => asiento.idSalaAsiento === idSalaAsiento);
   } catch (error) {
     console.error('Error en getAsientosBySala:', error);
     throw error;
   }
 };
+
+
+
+
 
 
 

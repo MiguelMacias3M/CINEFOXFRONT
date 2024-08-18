@@ -43,13 +43,22 @@ const MovieDetailScreen = ({ route, navigation }) => {
   const handleContinue = () => {
     console.log("Selected Horario:", selectedHorario);
     console.log("Tickets:", tickets);
-    
+  
     if (selectedHorario && tickets > 0) {
-      navigation.navigate('SeatSelection', { title, horario: selectedHorario, tickets });
+      // Aquí debes asegurarte de que idSala se pase correctamente
+      const salaSeleccionada = availableHorarios.find(horario => horario.horaProgramada === selectedHorario).idSala;
+  
+      navigation.navigate('SeatSelection', {
+        title,
+        horario: selectedHorario,
+        tickets,
+        idSala: salaSeleccionada, // Asegúrate de pasar idSala aquí
+      });
     } else {
       Alert.alert('Error', 'Seleccione un horario y el número de boletos.');
     }
   };
+  
 
   const handleIncreaseTickets = () => {
     if (tickets < MAX_TICKETS) {
