@@ -594,3 +594,54 @@ export const fetchLogs = async () => {
     throw error;
   }
 };
+
+// Función para enviar un mensaje de contacto
+export const sendContactMessage = async (name: string, email: string, message: string) => {
+  try {
+    const token = await AsyncStorage.getItem('token'); // Recuperar el token almacenado
+    if (!token) throw new Error('No se encontró el token');
+
+    const response = await fetch(`${API_BASE_URL}/contacto/contact`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ name, email, message }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Error al enviar el mensaje de contacto');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error en sendContactMessage:', error);
+    throw error;
+  }
+};
+
+export const fetchContactMessages = async () => {
+  try {
+    const token = await AsyncStorage.getItem('token'); // Recuperar el token almacenado
+    if (!token) throw new Error('No se encontró el token');
+
+    const response = await fetch(`${API_BASE_URL}/contacto/contact`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Error al obtener los mensajes de contacto');
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error en fetchContactMessages:', error);
+    throw error;
+  }
+};

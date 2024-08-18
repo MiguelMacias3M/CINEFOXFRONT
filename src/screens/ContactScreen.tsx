@@ -4,6 +4,7 @@ import { Text, Button } from 'react-native-elements';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { useNavigation } from '@react-navigation/native';
+import { sendContactMessage } from '../apiService'; // Importar la nueva función
 
 type ContactScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Contact'>;
 
@@ -13,9 +14,34 @@ const ContactScreen: React.FC = () => {
   const [message, setMessage] = useState('');
   const navigation = useNavigation<ContactScreenNavigationProp>();
 
-  const handleSend = () => {
-    Alert.alert('Mensaje enviado', 'Tu mensaje ha sido enviado correctamente');
-    navigation.navigate('Home');
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const handleSend = async () => {
+    if (name.trim() === '') {
+      Alert.alert('Validación', 'Por favor ingresa tu nombre.');
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      Alert.alert('Validación', 'Por favor ingresa un correo electrónico válido.');
+      return;
+    }
+
+    if (message.trim() === '') {
+      Alert.alert('Validación', 'Por favor ingresa un mensaje.');
+      return;
+    }
+
+    try {
+      await sendContactMessage(name, email, message); // Llamar a la función de envío
+      Alert.alert('Mensaje enviado', 'Tu mensaje ha sido enviado correctamente');
+      navigation.navigate('Home');
+    } catch (error) {
+      Alert.alert('Error', 'Hubo un problema al enviar tu mensaje. Inténtalo de nuevo.');
+    }
   };
 
   return (

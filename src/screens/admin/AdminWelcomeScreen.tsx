@@ -97,6 +97,11 @@ const AdminWelcomeScreen: React.FC<Props> = ({route}) => {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.adminButton}
+          onPress={() => handleNavigation('ContactoMsj')}>
+          <Text style={styles.buttonText}>Mensajes de contacto</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.adminButton}
           onPress={() => handleNavigation('Logs')}>
           <Text style={styles.buttonText}>Ver Logs del Sistema</Text>
         </TouchableOpacity>
