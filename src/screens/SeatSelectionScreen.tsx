@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Modal } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Alert, Modal } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
+import { getAllAsientos } from '../apiService'; // Asegúrate de que esta ruta sea correcta
 import { RootStackParamList } from '../navigation/AppNavigator';
 
 type SeatSelectionScreenNavigationProp = StackNavigationProp<RootStackParamList, 'SeatSelection'>;
@@ -15,29 +16,36 @@ type Props = {
 const SeatSelectionScreen: React.FC<Props> = ({ route, navigation }) => {
   const { title, horario, tickets } = route.params;
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
+  const [availableSeats, setAvailableSeats] = useState<any[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
 
-  const seats = [
-    'A-1', 'A-2', 'A-3', 'A-4', 'A-5',
-    'B-1', 'B-2', 'B-3', 'B-4', 'B-5',
-    'C-1', 'C-2', 'C-3', 'C-4', 'C-5',
-    'D-1', 'D-2', 'D-3', 'D-4', 'D-5',
-    'E-1', 'E-2', 'E-3', 'E-4', 'E-5',
-    'F-1', 'F-2', 'F-3', 'F-4', 'F-5',
-    'G-1', 'G-2', 'G-3', 'G-4', 'G-5',
-  ];
+  useEffect(() => {
+    const fetchAsientos = async () => {
+      try {
+        console.log("Iniciando fetchAllAsientos...");
+        const asientos = await getAllAsientos();
+        console.log("Asientos recibidos:", asientos);
+        setAvailableSeats(asientos);
+      } catch (error) {
+        console.error("Error al obtener todos los asientos:", error);
+        Alert.alert('Error', 'No se pudieron cargar los asientos');
+      }
+    };
 
-  const toggleSeatSelection = (seat: string) => {
-    if (selectedSeats.includes(seat)) {
-      setSelectedSeats(selectedSeats.filter(s => s !== seat));
+    fetchAsientos();
+  }, []);
+
+  const toggleSeatSelection = (seat: any) => {
+    const seatLabel = `${seat.filaAsiento}-${seat.numeroAsiento}`;
+    if (selectedSeats.includes(seatLabel)) {
+      setSelectedSeats(selectedSeats.filter(s => s !== seatLabel));
     } else {
       if (selectedSeats.length < tickets) {
-        setSelectedSeats([...selectedSeats, seat]);
+        setSelectedSeats([...selectedSeats, seatLabel]);
       } else {
-        // Si ya se ha alcanzado el número máximo de boletos, reemplazar el asiento más antiguo
         const newSelectedSeats = [...selectedSeats];
         newSelectedSeats.shift(); // Elimina el asiento más antiguo
-        newSelectedSeats.push(seat); // Añade el nuevo asiento
+        newSelectedSeats.push(seatLabel); // Añade el nuevo asiento
         setSelectedSeats(newSelectedSeats);
       }
     }
@@ -60,18 +68,19 @@ const SeatSelectionScreen: React.FC<Props> = ({ route, navigation }) => {
         <Text style={styles.screenLabel}>Pantalla</Text>
       </View>
       <View style={styles.seatContainer}>
-        {seats.map(seat => (
-          <View key={seat} style={styles.seatWrapper}>
+        {availableSeats.map(seat => (
+          <View key={`${seat.filaAsiento}-${seat.numeroAsiento}`} style={styles.seatWrapper}>
             <TouchableOpacity
               style={styles.seat}
               onPress={() => toggleSeatSelection(seat)}
+              disabled={seat.estadoAsiento === 'ocupado'}
             >
               <Image
-                source={selectedSeats.includes(seat) ? require('../assets/asientoRojo.png') : require('../assets/asientoBlanco.png')}
+                source={selectedSeats.includes(`${seat.filaAsiento}-${seat.numeroAsiento}`) ? require('../assets/asientoRojo.png') : require('../assets/asientoBlanco.png')}
                 style={styles.seatImage}
               />
             </TouchableOpacity>
-            <Text style={styles.seatLabel}>{seat}</Text>
+            <Text style={styles.seatLabel}>{seat.filaAsiento}-{seat.numeroAsiento}</Text>
           </View>
         ))}
       </View>

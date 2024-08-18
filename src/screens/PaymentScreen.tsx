@@ -121,7 +121,6 @@ const PaymentScreen: React.FC<Props> = ({ route, navigation }) => {
             buttonStyle={[styles.button, styles.cancelButton]}
             onPress={() => navigation.goBack()}
           />
-          
         </View>
       </Card>
     </ScrollView>

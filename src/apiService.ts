@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 
 const API_BASE_URL = 'https://apiboletos.onrender.com';
 
@@ -465,6 +466,16 @@ export const getCarteleraPorDia = async (dia) => {
   }
 };
 
+
+export const getAllAsientos = async () => {
+  try {
+      const response = await axios.get(`${API_BASE_URL}/asientos`);
+      return response.data;
+  } catch (error) {
+      console.error('Error al obtener todos los asientos:', error);
+      throw error;
+  }
+};
 
 // Eliminar una entrada en la cartelera
 export const deleteCartelera = async (idCartelera: string) => {
