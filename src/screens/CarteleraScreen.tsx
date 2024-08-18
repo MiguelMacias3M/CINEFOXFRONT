@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, FlatList, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native'; // Importa el hook de navegación
-import { getCarteleraPorDia } from '../apiService'; // Importa la función desde tu apiService
+import { useNavigation } from '@react-navigation/native';
+import { getCarteleraPorDia } from '../apiService';
 
 const CarteleraScreen = () => {
   const [selectedDay, setSelectedDay] = useState('Lunes');
   const [movies, setMovies] = useState([]);
-  const navigation = useNavigation(); // Obtén acceso a la navegación
+  const navigation = useNavigation();
 
   useEffect(() => {
     fetchCartelera(selectedDay);
@@ -16,7 +16,7 @@ const CarteleraScreen = () => {
     try {
       console.log(`Fetching cartelera for day: ${day}`);
       const data = await getCarteleraPorDia(day);
-      console.log('Cartelera data:', data); // Verifica los datos recibidos
+      console.log('Cartelera data:', data);
       if (data && Array.isArray(data)) {
         setMovies(data);
       } else {
@@ -30,7 +30,7 @@ const CarteleraScreen = () => {
   };
 
   const uniqueHorarios = (horarios) => {
-    if (!Array.isArray(horarios)) return []; // Asegurarse de que horarios sea un array
+    if (!Array.isArray(horarios)) return [];
     const seen = new Set();
     return horarios.filter((horario) => {
       const isDuplicate = seen.has(horario.horaProgramada);
@@ -39,36 +39,35 @@ const CarteleraScreen = () => {
     });
   };
 
-  const renderMovieItem = ({ item }) => {
-    if (!item.Pelicula) {
-      return null; // Si item.Pelicula es null o undefined, no renderizar nada
+  const renderMovieItem = ({ item, index }) => {
+    if (!item.pelicula) {
+      return null;
     }
 
-    const imageUrl = item.Pelicula.imagenPelicula 
-      ? `https://apiboletos.onrender.com/${item.Pelicula.imagenPelicula}`
+    const imageUrl = item.pelicula.imagenPelicula 
+      ? `https://apiboletos.onrender.com/${item.pelicula.imagenPelicula}`
       : null;
 
-      const handlePressMovie = () => {
-        console.log("handlePressMovie - Item seleccionado:", item);
-        console.log("handlePressMovie - Horarios antes de filtrar:", item.Horario);
-        
-        // Verificar si item.Horario es un array o un objeto individual
-        const horarios = Array.isArray(item.Horario) 
-          ? uniqueHorarios(item.Horario) 
-          : item.Horario 
-            ? [item.Horario] 
-            : [];
-      
-        console.log("handlePressMovie - Horarios únicos filtrados:", horarios);
-      
-        navigation.navigate('MovieDetail', {
-          title: item.Pelicula.nombrePelicula || 'Título no disponible',
-          image: imageUrl ? { uri: imageUrl } : null,
-          description: item.Pelicula.descripcion || 'Descripción no disponible',
-          horarios: horarios.length > 0 ? horarios : ["No hay horarios disponibles"],
-          sala: item.Sala.nombreSala || 'Sala no disponible', // Asegúrate de pasar la sala aquí
-        });
-      };
+    const handlePressMovie = () => {
+      console.log("handlePressMovie - Item seleccionado:", item);
+      console.log("handlePressMovie - Horarios antes de filtrar:", item.horarios);
+
+      const horarios = Array.isArray(item.horarios) 
+        ? uniqueHorarios(item.horarios) 
+        : item.horarios 
+          ? [item.horarios] 
+          : [];
+
+      console.log("handlePressMovie - Horarios únicos filtrados:", horarios);
+
+      navigation.navigate('MovieDetail', {
+        title: item.pelicula.nombrePelicula || 'Título no disponible',
+        image: imageUrl ? { uri: imageUrl } : null,
+        description: item.pelicula.descripcion || 'Descripción no disponible',
+        horarios: horarios.length > 0 ? horarios : ["No hay horarios disponibles"],
+        sala: item.horarios.length > 0 ? item.horarios[0].nombreSala || 'Sala no disponible' : 'Sala no disponible',
+      });
+    };
 
     return (
       <TouchableOpacity onPress={handlePressMovie}>
@@ -83,8 +82,8 @@ const CarteleraScreen = () => {
             <Text style={styles.noImageText}>Imagen no disponible</Text>
           )}
           <View style={styles.movieInfo}>
-            <Text style={styles.movieTitle}>{item.Pelicula.nombrePelicula || 'Título no disponible'}</Text>
-            <Text style={styles.movieDescription}>{item.Pelicula.descripcion || 'Descripción no disponible'}</Text>
+            <Text style={styles.movieTitle}>{item.pelicula.nombrePelicula || 'Título no disponible'}</Text>
+            <Text style={styles.movieDescription}>{item.pelicula.descripcion || 'Descripción no disponible'}</Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -115,7 +114,7 @@ const CarteleraScreen = () => {
         <FlatList
           data={movies}
           renderItem={renderMovieItem}
-          keyExtractor={(item) => item.idCartelera.toString()}
+          keyExtractor={(item, index) => item.pelicula.nombrePelicula + '-' + index} // Se usa una combinación única
           contentContainerStyle={styles.moviesContainer}
         />
       ) : (
@@ -128,75 +127,65 @@ const CarteleraScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: '#2D3E50',
-    padding: 10,
-  },
-  welcomeSubtitle: {
-    fontSize: 18,
-    color: '#FFFFFF',
-    marginBottom: 10,
-    textAlign: 'center',
+    padding: 20,
   },
   submenu: {
-    paddingVertical: 5,
     marginBottom: 10,
   },
   submenuItem: {
-    color: '#FFFFFF',
     fontSize: 16,
-    marginHorizontal: 10,
+    padding: 10,
   },
   selectedSubmenuItem: {
     fontWeight: 'bold',
-    color: '#E50914',
+    color: 'blue',
+  },
+  welcomeSubtitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
   },
   subtitle: {
-    fontSize: 18,
-    color: '#FFFFFF',
-    marginBottom: 10,
-    textAlign: 'center',
-  },
-  moviesContainer: {
-    paddingBottom: 20,
-  },
-  noMoviesText: {
-    color: '#FFFFFF',
     fontSize: 16,
-    textAlign: 'center',
-    marginTop: 20,
+    fontWeight: 'bold',
+    marginVertical: 10,
   },
   card: {
-    backgroundColor: '#1A252F',
-    borderRadius: 10,
+    marginBottom: 20,
     padding: 10,
-    marginBottom: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    backgroundColor: '#fff',
   },
   movieImage: {
-    width: 100,
-    height: 150,
-    borderRadius: 10,
-    marginRight: 10,
+    width: '100%',
+    height: 200,
+    borderRadius: 5,
   },
   noImageText: {
-    color: '#BBBBBB',
-    fontSize: 14,
     textAlign: 'center',
-    marginBottom: 10,
+    color: '#888',
+    fontSize: 16,
   },
   movieInfo: {
-    flex: 1,
+    marginTop: 10,
   },
   movieTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
-    color: '#FFFFFF',
   },
   movieDescription: {
+    fontSize: 14,
+    color: '#555',
+  },
+  moviesContainer: {
+    flexGrow: 1,
+  },
+  noMoviesText: {
+    textAlign: 'center',
     fontSize: 16,
-    color: '#BBBBBB',
-    marginTop: 5,
+    color: '#888',
   },
 });
 

@@ -444,7 +444,7 @@ export const getAllCarteleras = async () => {
   }
 };
 
-export const getCarteleraPorDia = async (dia) => {
+export const getCarteleraPorDia = async (dia: string) => {
   try {
     const token = await AsyncStorage.getItem('token'); // Recupera el token almacenado
     const response = await fetch(`${API_BASE_URL}/cartelera/carteleraDia?dia=${encodeURIComponent(dia)}`, {
@@ -456,7 +456,9 @@ export const getCarteleraPorDia = async (dia) => {
     });
 
     if (!response.ok) {
-      throw new Error('Error al obtener la cartelera');
+      const errorData = await response.json();
+      console.error('Error al obtener la cartelera:', errorData);
+      throw new Error(errorData.message || 'Error al obtener la cartelera');
     }
 
     return await response.json();
@@ -467,15 +469,6 @@ export const getCarteleraPorDia = async (dia) => {
 };
 
 
-export const getAllAsientos = async () => {
-  try {
-      const response = await axios.get(`${API_BASE_URL}/asientos`);
-      return response.data;
-  } catch (error) {
-      console.error('Error al obtener todos los asientos:', error);
-      throw error;
-  }
-};
 
 // Eliminar una entrada en la cartelera
 export const deleteCartelera = async (idCartelera: string) => {
@@ -599,6 +592,57 @@ export const fetchLogs = async () => {
     return await response.json();
   } catch (error) {
     console.error('Error en fetchLogs:', error);
+    throw error;
+  }
+};
+
+// Función para enviar un mensaje de contacto
+export const sendContactMessage = async (name: string, email: string, message: string) => {
+  try {
+    const token = await AsyncStorage.getItem('token'); // Recuperar el token almacenado
+    if (!token) throw new Error('No se encontró el token');
+
+    const response = await fetch(`${API_BASE_URL}/contacto/contact`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ name, email, message }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Error al enviar el mensaje de contacto');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error en sendContactMessage:', error);
+    throw error;
+  }
+};
+
+export const fetchContactMessages = async () => {
+  try {
+    const token = await AsyncStorage.getItem('token'); // Recuperar el token almacenado
+    if (!token) throw new Error('No se encontró el token');
+
+    const response = await fetch(`${API_BASE_URL}/contacto/contact`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Error al obtener los mensajes de contacto');
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error en fetchContactMessages:', error);
     throw error;
   }
 };

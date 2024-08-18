@@ -108,9 +108,9 @@ const MovieManagementScreen: React.FC<Props> = ({ navigation }) => {
           <TouchableOpacity style={styles.assignButton} onPress={() => handleAssignMovie(item.idPelicula)}>
             <Text style={styles.assignButtonText}>Asignar a Sala</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.editButton} onPress={() => handleEditMovie(item)}>
+          {/* <TouchableOpacity style={styles.editButton} onPress={() => handleEditMovie(item)}>
             <Text style={styles.editButtonText}>Editar</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <TouchableOpacity style={styles.deleteButton} onPress={() => handleDeleteMovie(item.idPelicula)}>
             <Text style={styles.deleteButtonText}>Eliminar</Text>
           </TouchableOpacity>
