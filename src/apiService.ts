@@ -443,7 +443,7 @@ export const getAllCarteleras = async () => {
   }
 };
 
-export const getCarteleraPorDia = async (dia) => {
+export const getCarteleraPorDia = async (dia: string) => {
   try {
     const token = await AsyncStorage.getItem('token'); // Recupera el token almacenado
     const response = await fetch(`${API_BASE_URL}/cartelera/carteleraDia?dia=${encodeURIComponent(dia)}`, {
@@ -455,7 +455,9 @@ export const getCarteleraPorDia = async (dia) => {
     });
 
     if (!response.ok) {
-      throw new Error('Error al obtener la cartelera');
+      const errorData = await response.json();
+      console.error('Error al obtener la cartelera:', errorData);
+      throw new Error(errorData.message || 'Error al obtener la cartelera');
     }
 
     return await response.json();
@@ -464,6 +466,7 @@ export const getCarteleraPorDia = async (dia) => {
     throw error;
   }
 };
+
 
 
 // Eliminar una entrada en la cartelera
