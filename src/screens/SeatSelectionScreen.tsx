@@ -93,8 +93,8 @@ const SeatSelectionScreen: React.FC<Props> = ({ route, navigation }) => {
                   seat.estadoAsiento === 'ocupado' 
                     ? require('../assets/asientoRojo.png') 
                     : selectedSeats.includes(`${seat.filaAsiento}-${seat.numeroAsiento}`)
-                      ? require('../assets/asientoAnaranjado.png') 
-                      : require('../assets/asientoBlanco.png')
+                      ? require('../assets/asientoBlanco.png') 
+                      : require('../assets/asientoAnaranjado.png')
                 }
                 style={styles.seatImage}
               />
@@ -111,11 +111,11 @@ const SeatSelectionScreen: React.FC<Props> = ({ route, navigation }) => {
           <Text style={styles.legendText}>Apartado</Text>
         </View>
         <View style={styles.legendItem}>
-          <Image source={require('../assets/asientoAnaranjado.png')} style={styles.legendImage} />
+          <Image source={require('../assets/asientoBlanco.png')} style={styles.legendImage} />
           <Text style={styles.legendText}>Seleccionado</Text>
         </View>
         <View style={styles.legendItem}>
-          <Image source={require('../assets/asientoBlanco.png')} style={styles.legendImage} />
+          <Image source={require('../assets/asientoAnaranjado.png')} style={styles.legendImage} />
           <Text style={styles.legendText}>Disponible</Text>
         </View>
       </View>
@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
   selectedSeatsText: {
     fontSize: 16,
     color: '#FFFFFF',
-    marginTop: 20,
+    marginTop: 80,
   },
   selectedSeatsList: {
     fontSize: 16,

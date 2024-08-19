@@ -32,14 +32,14 @@ const SupportTeamScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: '#2D3E50',
     padding: 20,
   },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
     marginBottom: 30,
-    color: '#333',
+    color: 'white',
     textAlign: 'center',
   },
   memberContainer: {

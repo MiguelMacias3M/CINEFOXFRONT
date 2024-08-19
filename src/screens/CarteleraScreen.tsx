@@ -164,8 +164,8 @@ const styles = StyleSheet.create({
   },
   selectedSubmenuItem: {
     fontWeight: 'bold',
-    color: '#FF0000', // Cambia el color del texto a rojo
-    backgroundColor: '#41698A',
+    color: 'black', // Cambia el color del texto a rojo
+    backgroundColor: 'yellow',
     borderRadius: 5,
   },
   subtitle: {

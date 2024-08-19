@@ -82,7 +82,6 @@ const AdminWelcomeScreen: React.FC<Props> = ({route}) => {
   return (
     <View style={styles.container}>
       <Text style={styles.welcomeText}>Bienvenido, {adminName}</Text>
-      <Text style={styles.subtitle}>Panel de Administración</Text>
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity
@@ -136,7 +135,7 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: 'bold',
     color: '#FFFFFF',
-    marginBottom: 20,
+    marginBottom: 70,
     textAlign: 'center',
   },
   subtitle: {

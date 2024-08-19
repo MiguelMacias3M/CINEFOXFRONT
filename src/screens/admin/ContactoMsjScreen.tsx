@@ -64,13 +64,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   messageItem: {
-    backgroundColor: '#1A252F',
+    backgroundColor: 'white',
     padding: 15,
     borderRadius: 8,
     marginBottom: 10,
   },
   messageText: {
-    color: '#FFFFFF',
+    color: 'black',
     fontSize: 16,
   },
   loading: {

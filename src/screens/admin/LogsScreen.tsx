@@ -65,13 +65,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   logItem: {
-    backgroundColor: '#1A252F',
+    backgroundColor: 'white',
     padding: 15,
     borderRadius: 8,
     marginBottom: 10,
   },
   logText: {
-    color: '#FFFFFF',
+    color: 'black',
     fontSize: 16,
   },
   loading: {

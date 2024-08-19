@@ -51,9 +51,9 @@ const DulceriaScreen = () => {
       <Image source={item.image} style={styles.productImage} />
       <Text style={styles.productName}>{item.name}</Text>
       <Text style={styles.productPrice}>${item.price}</Text>
-      <TouchableOpacity style={styles.addButton}>
+      {/* <TouchableOpacity style={styles.addButton}>
         <Text style={styles.addButtonText}>Añadir al carrito</Text>
-      </TouchableOpacity>
+      </TouchableOpacity>*/} 
     </View>
   );
 
@@ -78,6 +78,7 @@ const DulceriaScreen = () => {
         columnWrapperStyle={styles.row} // Estilo para la fila
         contentContainerStyle={styles.productsContainer}
       />
+      <Text style={styles.title}>¡¡¡Próximamente venta en la aplicación!!!</Text>
     </View>
   );
 };

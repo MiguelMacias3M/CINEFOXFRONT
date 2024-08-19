@@ -86,7 +86,6 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.menu}>
-        <Text style={styles.menuItem}>Inicio</Text>
         <TouchableOpacity onPress={() => navigation.navigate('Cartelera')}>
           <Text style={styles.menuItem}>Cartelera</Text>
         </TouchableOpacity>
