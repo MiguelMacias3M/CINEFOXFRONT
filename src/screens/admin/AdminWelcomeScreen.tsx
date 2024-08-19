@@ -93,7 +93,7 @@ const AdminWelcomeScreen: React.FC<Props> = ({route}) => {
         <TouchableOpacity
           style={styles.adminButton}
           onPress={() => handleNavigation('AdminRegistration')}>
-          <Text style={styles.buttonText}>Gestión de Usuarios</Text>
+          <Text style={styles.buttonText}>Registro de Usuarios (Administradores)</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.adminButton}
