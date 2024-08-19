@@ -1,8 +1,32 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, TextInput, Button, Alert, StyleSheet, Image } from 'react-native';
-import { Picker } from '@react-native-picker/picker'; // Importa desde el nuevo paquete
-import { launchImageLibrary } from 'react-native-image-picker'; // Importa la función para seleccionar imágenes
-import { createMovie } from '../../apiService'; // Ajusta la ruta de importación según tu estructura
+import { launchImageLibrary } from 'react-native-image-picker';
+import { createMovie } from '../../apiService';
+import { Picker } from '@react-native-picker/picker';
+
+// Función para sanitizar texto
+const sanitizeText = (text) => {
+  return text.replace(/<[^>]*>/g, '').trim(); // Elimina etiquetas HTML y espacios en blanco
+};
+
+// Función para sanitizar y validar precio
+const sanitizeAndValidatePrice = (price) => {
+  const sanitizedPrice = parseFloat(price);
+  return isNaN(sanitizedPrice) || sanitizedPrice <= 0 ? '' : sanitizedPrice.toFixed(2);
+};
+
+// Función para sanitizar y validar duración
+const sanitizeAndValidateDuration = (duration) => {
+  const sanitizedDuration = parseFloat(duration);
+  return isNaN(sanitizedDuration) || sanitizedDuration <= 0 ? '' : sanitizedDuration;
+};
+
+// Función para validar clasificación
+const validateClassification = (classification) => {
+  const validClassifications = ['G', 'PG', 'PG-13', 'R', 'NC-17']; // Clasificaciones válidas
+  const sanitizedClassification = sanitizeText(classification).toUpperCase();
+  return validClassifications.includes(sanitizedClassification) ? sanitizedClassification : '';
+};
 
 const MovieFormScreen = ({ navigation }) => {
   const [nombrePelicula, setNombrePelicula] = useState('');
@@ -12,23 +36,62 @@ const MovieFormScreen = ({ navigation }) => {
   const [clasificacionPelicula, setClasificacionPelicula] = useState('');
   const [descripcionPelicula, setDescripcionPelicula] = useState('');
   const [precioBoleto, setPrecioBoleto] = useState('');
-  const [imagenPelicula, setImagenPelicula] = useState(null); // Nuevo estado para manejar la imagen
-
-
+  const [imagenPelicula, setImagenPelicula] = useState(null);
+  const [errorClasificacion, setErrorClasificacion] = useState('');
 
   const handleImagePick = () => {
-    launchImageLibrary({ mediaType: 'photo' }, (response) => {
+    launchImageLibrary({ mediaType: 'photo', includeBase64: false }, (response) => {
       if (response.didCancel) {
         // El usuario canceló la selección de imagen
       } else if (response.errorCode) {
         Alert.alert('Error', 'Error al seleccionar la imagen');
+      } else if (!['image/jpeg', 'image/png', 'image/gif'].includes(response.assets[0].type)) {
+        Alert.alert('Error', 'Formato de imagen no soportado. Solo se permiten .jpeg, .jpg, .png y .gif');
       } else {
-        setImagenPelicula(response.assets[0]); // Asume que la primera imagen es la seleccionada
+        setImagenPelicula(response.assets[0]);
       }
     });
   };
 
+  const validateInputs = () => {
+    // Sanitización y validación de datos de texto
+    const sanitizedNombre = sanitizeText(nombrePelicula);
+    const sanitizedDirector = sanitizeText(directorPelicula);
+    const sanitizedActores = sanitizeText(actoresPelicula);
+    const sanitizedDescripcion = sanitizeText(descripcionPelicula);
+    const sanitizedClasificacion = validateClassification(clasificacionPelicula);
+    const sanitizedDuracion = sanitizeAndValidateDuration(duracionPelicula);
+    const sanitizedPrecio = sanitizeAndValidatePrice(precioBoleto);
+
+    // Validación de datos de texto
+    if (!sanitizedNombre || !sanitizedDirector || !sanitizedActores ||
+        !sanitizedDescripcion || !sanitizedClasificacion || !sanitizedDuracion || !sanitizedPrecio) {
+      Alert.alert('Error', 'Por favor, complete todos los campos requeridos con datos válidos.');
+      return false;
+    }
+
+    if (!sanitizedClasificacion) {
+      setErrorClasificacion('Clasificación no válida. Las clasificaciones permitidas son: G, PG, PG-13, R, NC-17.');
+      return false;
+    } else {
+      setErrorClasificacion('');
+    }
+
+    // Actualizar estados con datos sanitizados
+    setNombrePelicula(sanitizedNombre);
+    setDirectorPelicula(sanitizedDirector);
+    setActoresPelicula(sanitizedActores);
+    setDescripcionPelicula(sanitizedDescripcion);
+    setClasificacionPelicula(sanitizedClasificacion);
+    setDuracionPelicula(sanitizedDuracion);
+    setPrecioBoleto(sanitizedPrecio);
+
+    return true;
+  };
+
   const handleSubmit = async () => {
+    if (!validateInputs()) return;
+
     try {
       const formData = new FormData();
       formData.append('nombrePelicula', nombrePelicula);
@@ -94,6 +157,11 @@ const MovieFormScreen = ({ navigation }) => {
         value={clasificacionPelicula}
         onChangeText={setClasificacionPelicula}
       />
+      {errorClasificacion ? (
+        <Text style={styles.errorText}>{errorClasificacion}</Text>
+      ) : (
+        <Text style={styles.infoText}>Clasificaciones permitidas: G, PG, PG-13, R, NC-17</Text>
+      )}
 
       <TextInput
         style={styles.input}
@@ -101,7 +169,6 @@ const MovieFormScreen = ({ navigation }) => {
         value={descripcionPelicula}
         onChangeText={setDescripcionPelicula}
       />
-
 
       <TextInput
         style={styles.input}
@@ -147,6 +214,14 @@ const styles = StyleSheet.create({
     height: 100,
     resizeMode: 'cover',
     marginVertical: 10,
+  },
+  errorText: {
+    color: 'red',
+    marginBottom: 15,
+  },
+  infoText: {
+    color: 'blue',
+    marginBottom: 15,
   },
 });
 
