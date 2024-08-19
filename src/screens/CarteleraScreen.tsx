@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, FlatList, 
 import { useNavigation } from '@react-navigation/native';
 import { getCarteleraPorDia } from '../apiService';
 
+//Todo perron
 const CarteleraScreen = () => {
   const [selectedDay, setSelectedDay] = useState('Lunes');
   const [movies, setMovies] = useState([]);
