@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, Image, Alert, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, ScrollView, Image, Alert, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Input, Button, Text } from 'react-native-elements';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
@@ -19,6 +19,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -86,6 +87,8 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
       return;
     }
 
+    setLoading(true);
+
     try {
       const userData = await registerUsuarioCliente(sanitizedName, sanitizedSurname, age, sanitizedEmail, sanitizedPhone, sanitizedPassword);
       console.log('Usuario registrado:', userData);
@@ -93,6 +96,8 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
     } catch (error) {
       console.error('Error al registrar usuario:', error);
       Alert.alert('Error', 'Hubo un error al intentar registrarse. Por favor, inténtalo de nuevo.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -180,12 +185,16 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
           </TouchableOpacity>
         }
       />
-      <Button
-        title="Registrarse"
-        buttonStyle={styles.button}
-        titleStyle={styles.buttonText}
-        onPress={handleRegister}
-      />
+      {loading ? (
+        <ActivityIndicator size="large" color="#E50914" />
+      ) : (
+        <Button
+          title="Registrarse"
+          buttonStyle={styles.button}
+          titleStyle={styles.buttonText}
+          onPress={handleRegister}
+        />
+      )}
       <Text style={styles.footerText}>
         ¿Ya tienes una cuenta?{' '}
         <Text style={styles.footerLink} onPress={() => navigation.navigate('Login')}>
