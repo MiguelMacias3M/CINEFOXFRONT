@@ -14,9 +14,7 @@ const CarteleraScreen = () => {
 
   const fetchCartelera = async (day) => {
     try {
-      console.log(`Fetching cartelera for day: ${day}`);
       const data = await getCarteleraPorDia(day);
-      console.log('Cartelera data:', data);
       if (data && Array.isArray(data)) {
         setMovies(data);
       } else {
@@ -49,16 +47,11 @@ const CarteleraScreen = () => {
       : null;
 
     const handlePressMovie = () => {
-      console.log("handlePressMovie - Item seleccionado:", item);
-      console.log("handlePressMovie - Horarios antes de filtrar:", item.horarios);
-
       const horarios = Array.isArray(item.horarios) 
         ? uniqueHorarios(item.horarios) 
         : item.horarios 
           ? [item.horarios] 
           : [];
-
-      console.log("handlePressMovie - Horarios únicos filtrados:", horarios);
 
       navigation.navigate('MovieDetail', {
         title: item.pelicula.nombrePelicula || 'Título no disponible',
@@ -128,45 +121,66 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     padding: 20,
+    backgroundColor: '#1A3C58', // Color de fondo principal azul oscuro
   },
   submenu: {
     marginBottom: 10,
+    backgroundColor: '#2B4F70', // Fondo más oscuro para la barra de días
+    paddingVertical: 10,
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 3,
   },
   submenuItem: {
     fontSize: 16,
-    padding: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    color: '#E5E5E5', // Color de texto neutro claro
   },
   selectedSubmenuItem: {
     fontWeight: 'bold',
-    color: 'blue',
+    color: '#FFFFFF', // Texto blanco para el día seleccionado
+    backgroundColor: '#41698A', // Fondo azul medio para el día seleccionado
+    borderRadius: 5,
   },
   welcomeSubtitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 10,
+    color: '#FFFFFF', // Color del texto blanco
   },
   subtitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginVertical: 10,
+    fontSize: 18,
+    fontWeight: '600',
+    marginVertical: 15,
+    color: '#E5E5E5', // Color del texto en subtítulos
   },
   card: {
     marginBottom: 20,
-    padding: 10,
+    padding: 15,
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    backgroundColor: '#fff',
+    borderColor: '#315470',
+    borderRadius: 10,
+    backgroundColor: '#2B4F70', // Fondo de las tarjetas en azul oscuro
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 3,
   },
   movieImage: {
     width: '100%',
     height: 200,
-    borderRadius: 5,
+    borderRadius: 10,
   },
   noImageText: {
     textAlign: 'center',
     color: '#888',
     fontSize: 16,
+    paddingVertical: 50, // Padding extra para simular espacio de imagen
   },
   movieInfo: {
     marginTop: 10,
@@ -174,10 +188,11 @@ const styles = StyleSheet.create({
   movieTitle: {
     fontSize: 18,
     fontWeight: 'bold',
+    color: '#FFFFFF', // Texto blanco para el título
   },
   movieDescription: {
     fontSize: 14,
-    color: '#555',
+    color: '#E5E5E5', // Texto más claro para la descripción
   },
   moviesContainer: {
     flexGrow: 1,
@@ -185,7 +200,7 @@ const styles = StyleSheet.create({
   noMoviesText: {
     textAlign: 'center',
     fontSize: 16,
-    color: '#888',
+    color: '#E5E5E5', // Texto neutro claro para no hay películas
   },
 });
 
