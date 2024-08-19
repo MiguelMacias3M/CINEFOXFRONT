@@ -3,7 +3,7 @@ import { View, StyleSheet, ScrollView, Image, Alert } from 'react-native';
 import { Input, Button, Text } from 'react-native-elements';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
-import { registerUsuarioCliente } from '../apiService'; // Importa la función correcta
+import { registerUsuarioCliente } from '../apiService';
 
 type RegisterScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Register'>;
 
@@ -19,14 +19,63 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
 
+  const validatePassword = (password: string) => {
+    const minLength = 8;
+    const uppercaseRegex = /[A-Z]/;
+    const numberRegex = /\d/;
+    const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
+
+    if (password.length < minLength) {
+      Alert.alert('Error', 'La contraseña debe tener al menos 8 caracteres.');
+      return false;
+    }
+    if (!uppercaseRegex.test(password)) {
+      Alert.alert('Error', 'La contraseña debe contener al menos una letra mayúscula.');
+      return false;
+    }
+    if (!numberRegex.test(password)) {
+      Alert.alert('Error', 'La contraseña debe contener al menos un número.');
+      return false;
+    }
+    if (!specialCharRegex.test(password)) {
+      Alert.alert('Error', 'La contraseña debe contener al menos un símbolo especial.');
+      return false;
+    }
+
+    return true;
+  };
+
   const handleRegister = async () => {
     try {
+      if (!name || !surname || !age || !email || !phone || !password) {
+        Alert.alert('Error', 'Por favor, completa todos los campos.');
+        return;
+      }
+
+      if (!validatePassword(password)) {
+        return;
+      }
+
       const userData = await registerUsuarioCliente(name, surname, age, email, phone, password);
       console.log('Usuario registrado:', userData);
       Alert.alert('Registro exitoso', 'Te has registrado exitosamente.', [{ text: 'OK', onPress: () => navigation.navigate('Login') }]);
     } catch (error) {
       console.error('Error al registrar usuario:', error);
       Alert.alert('Error', 'Hubo un error al intentar registrarse. Por favor, inténtalo de nuevo.');
+    }
+  };
+
+  const handleAgeChange = (text: string) => {
+    const formattedText = text.replace(/\D/g, ''); // Solo permite dígitos
+    if (formattedText.length <= 2) {
+      setAge(formattedText);
+    }
+  };
+
+  const handlePhoneChange = (text: string) => {
+    const formattedText = text.replace(/\D/g, ''); // Solo permite dígitos
+    if (formattedText.length <= 10) {
+      setPhone(formattedText);
     }
   };
 
@@ -53,10 +102,11 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
         placeholder="Edad"
         leftIcon={<Image source={require('../assets/icons/calendar.png')} style={styles.icon} />}
         value={age}
-        onChangeText={setAge}
+        onChangeText={handleAgeChange}
         keyboardType="numeric"
         containerStyle={styles.inputContainer}
         inputStyle={styles.input}
+        maxLength={2} // Limitar la entrada a 2 dígitos
       />
       <Input
         placeholder="Correo electrónico"
@@ -72,10 +122,11 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
         placeholder="Teléfono"
         leftIcon={<Image source={require('../assets/icons/phone.png')} style={styles.icon} />}
         value={phone}
-        onChangeText={setPhone}
+        onChangeText={handlePhoneChange}
         keyboardType="phone-pad"
         containerStyle={styles.inputContainer}
         inputStyle={styles.input}
+        maxLength={10} // Limitar la entrada a 10 dígitos
       />
       <Input
         placeholder="Contraseña"
