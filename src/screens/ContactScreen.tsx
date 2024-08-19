@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, Image, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { View, StyleSheet, ScrollView, Image, TextInput, Alert } from 'react-native';
 import { Text, Button } from 'react-native-elements';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { useNavigation } from '@react-navigation/native';
-import { sendContactMessage } from '../apiService'; // Importar la nueva función
+import { sendContactMessage } from '../apiService';
 
 type ContactScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Contact'>;
 
@@ -19,24 +19,41 @@ const ContactScreen: React.FC = () => {
     return emailRegex.test(email);
   };
 
+  const validateName = (name: string) => {
+    const nameRegex = /^[A-Za-z\s]+$/;
+    return nameRegex.test(name) && name.length >= 15;
+  };
+
+  const sanitizeInput = (input: string) => {
+    return input.replace(/[^a-zA-Z0-9@.\s]/g, '');
+  };
+
+  const validateMessageLength = (message: string) => {
+    return message.length >= 20 && message.length <= 300;
+  };
+
   const handleSend = async () => {
-    if (name.trim() === '') {
-      Alert.alert('Validación', 'Por favor ingresa tu nombre.');
+    const sanitizedName = sanitizeInput(name.trim());
+    const sanitizedEmail = sanitizeInput(email.trim());
+    const sanitizedMessage = sanitizeInput(message.trim());
+
+    if (!validateName(sanitizedName)) {
+      Alert.alert('Validación', 'El nombre debe tener al menos 15 caracteres y no debe contener números o caracteres especiales.');
       return;
     }
 
-    if (!validateEmail(email)) {
+    if (!validateEmail(sanitizedEmail)) {
       Alert.alert('Validación', 'Por favor ingresa un correo electrónico válido.');
       return;
     }
 
-    if (message.trim() === '') {
-      Alert.alert('Validación', 'Por favor ingresa un mensaje.');
+    if (!validateMessageLength(sanitizedMessage)) {
+      Alert.alert('Validación', 'El mensaje debe tener entre 20 y 300 caracteres.');
       return;
     }
 
     try {
-      await sendContactMessage(name, email, message); // Llamar a la función de envío
+      await sendContactMessage(sanitizedName, sanitizedEmail, sanitizedMessage);
       Alert.alert('Mensaje enviado', 'Tu mensaje ha sido enviado correctamente');
       navigation.navigate('Home');
     } catch (error) {

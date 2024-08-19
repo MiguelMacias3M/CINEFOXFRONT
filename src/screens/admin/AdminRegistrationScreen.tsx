@@ -16,16 +16,87 @@ const AdminRegistrationScreen: React.FC<{ navigation: AdminRegistrationScreenNav
   const [contrasenaUsuario, setContrasenaUsuario] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validateNameOrSurname = (input: string) => {
+    const nameRegex = /^[A-Za-z\s]+$/;
+    return nameRegex.test(input) && input.length >= 3;
+  };
+
+  const validateAge = (age: string) => {
+    const ageNumber = parseInt(age, 10);
+    return ageNumber >= 18;
+  };
+
+  const validatePhone = (phone: string) => {
+    const phoneRegex = /^\d{10}$/;
+    return phoneRegex.test(phone);
+  };
+
+  const validatePassword = (password: string) => {
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{10,}$/;
+    return passwordRegex.test(password);
+  };
+
+  const sanitizeInput = (input: string) => {
+    return input.replace(/[^a-zA-Z0-9@.\s]/g, '');
+  };
+
   const handleRegister = async () => {
     setLoading(true);
+    const sanitizedNombre = sanitizeInput(nombreUsuario.trim());
+    const sanitizedApellido = sanitizeInput(apellidoUsuario.trim());
+    const sanitizedCorreo = sanitizeInput(correoUsuario.trim());
+    const sanitizedTelefono = sanitizeInput(telefonoUsuario.trim());
+    const sanitizedContrasena = contrasenaUsuario.trim();  // Keep special characters in password
+
+    if (!validateNameOrSurname(sanitizedNombre)) {
+      Alert.alert('Validación', 'El nombre debe tener al menos 3 caracteres y no debe contener números o caracteres especiales.');
+      setLoading(false);
+      return;
+    }
+
+    if (!validateNameOrSurname(sanitizedApellido)) {
+      Alert.alert('Validación', 'Los apellidos deben tener al menos 3 caracteres y no deben contener números o caracteres especiales.');
+      setLoading(false);
+      return;
+    }
+
+    if (!validateAge(edadUsuario)) {
+      Alert.alert('Validación', 'Debes tener al menos 18 años para registrarte.');
+      setLoading(false);
+      return;
+    }
+
+    if (!validateEmail(sanitizedCorreo)) {
+      Alert.alert('Validación', 'Por favor ingresa un correo electrónico válido.');
+      setLoading(false);
+      return;
+    }
+
+    if (!validatePhone(sanitizedTelefono)) {
+      Alert.alert('Validación', 'El teléfono debe tener 10 dígitos.');
+      setLoading(false);
+      return;
+    }
+
+    if (!validatePassword(sanitizedContrasena)) {
+      Alert.alert('Validación', 'La contraseña debe tener al menos 10 caracteres e incluir mayúsculas, minúsculas, números y caracteres especiales.');
+      setLoading(false);
+      return;
+    }
+
     try {
       const userData = await registerUsuarioAdmin(
-        nombreUsuario,
-        apellidoUsuario,
+        sanitizedNombre,
+        sanitizedApellido,
         edadUsuario,
-        correoUsuario,
-        telefonoUsuario,
-        contrasenaUsuario
+        sanitizedCorreo,
+        sanitizedTelefono,
+        sanitizedContrasena
       );
       console.log('Administrador registrado:', userData);
       Alert.alert('Registro exitoso', 'Administrador registrado correctamente.', [{ text: 'OK', onPress: () => navigation.goBack() }]);
@@ -145,15 +216,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     right: 60,
-  },
-  footerText: {
-    marginTop: 20,
-    fontSize: 16,
-    color: '#888',
-  },
-  footerLink: {
-    color: '#E50914',
-    fontWeight: 'bold',
   },
 });
 

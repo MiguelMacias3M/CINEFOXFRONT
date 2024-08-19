@@ -19,9 +19,74 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
 
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validateNameOrSurname = (input: string) => {
+    const nameRegex = /^[A-Za-z\s]+$/;
+    return nameRegex.test(input) && input.length >= 3;
+  };
+
+  const validateAge = (age: string) => {
+    const ageNumber = parseInt(age, 10);
+    return ageNumber >= 18;
+  };
+
+  const validatePhone = (phone: string) => {
+    const phoneRegex = /^\d{10}$/;
+    return phoneRegex.test(phone);
+  };
+
+  const validatePassword = (password: string) => {
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{10,}$/;
+    return passwordRegex.test(password);
+  };
+
+  const sanitizeInput = (input: string) => {
+    return input.replace(/[^a-zA-Z0-9@.\s]/g, '');
+  };
+
   const handleRegister = async () => {
+    const sanitizedName = sanitizeInput(name.trim());
+    const sanitizedSurname = sanitizeInput(surname.trim());
+    const sanitizedEmail = sanitizeInput(email.trim());
+    const sanitizedPhone = sanitizeInput(phone.trim());
+    const sanitizedPassword = password.trim();  // Keep special characters in password
+
+    if (!validateNameOrSurname(sanitizedName)) {
+      Alert.alert('Validación', 'El nombre debe tener al menos 3 caracteres y no debe contener números o caracteres especiales.');
+      return;
+    }
+
+    if (!validateNameOrSurname(sanitizedSurname)) {
+      Alert.alert('Validación', 'Los apellidos deben tener al menos 3 caracteres y no deben contener números o caracteres especiales.');
+      return;
+    }
+
+    if (!validateAge(age)) {
+      Alert.alert('Validación', 'Debes tener al menos 18 años para registrarte.');
+      return;
+    }
+
+    if (!validateEmail(sanitizedEmail)) {
+      Alert.alert('Validación', 'Por favor ingresa un correo electrónico válido.');
+      return;
+    }
+
+    if (!validatePhone(sanitizedPhone)) {
+      Alert.alert('Validación', 'El teléfono debe tener 10 dígitos.');
+      return;
+    }
+
+    if (!validatePassword(sanitizedPassword)) {
+      Alert.alert('Validación', 'La contraseña debe tener al menos 10 caracteres e incluir mayúsculas, minúsculas, números y caracteres especiales.');
+      return;
+    }
+
     try {
-      const userData = await registerUsuarioCliente(name, surname, age, email, phone, password);
+      const userData = await registerUsuarioCliente(sanitizedName, sanitizedSurname, age, sanitizedEmail, sanitizedPhone, sanitizedPassword);
       console.log('Usuario registrado:', userData);
       Alert.alert('Registro exitoso', 'Te has registrado exitosamente.', [{ text: 'OK', onPress: () => navigation.navigate('Login') }]);
     } catch (error) {
