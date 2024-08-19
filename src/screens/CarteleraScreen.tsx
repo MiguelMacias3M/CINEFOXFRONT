@@ -95,7 +95,6 @@ const CarteleraScreen = () => {
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Cartelera</Text>
-        
       </View>
       <FlatList
         horizontal
@@ -164,7 +163,7 @@ const styles = StyleSheet.create({
   },
   selectedSubmenuItem: {
     fontWeight: 'bold',
-    color: '#FFFFFF',
+    color: '#FF0000', // Cambia el color del texto a rojo
     backgroundColor: '#41698A',
     borderRadius: 5,
   },
