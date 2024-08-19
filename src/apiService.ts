@@ -663,3 +663,51 @@ export const fetchContactMessages = async () => {
     throw error;
   }
 };
+
+// Crear una nueva sala
+export const createSala = async (nombreSala: string, cantidadAsientos: number, cantidadFilas: number, maxAsientosPorFila: number) => {
+  try {
+    const token = await AsyncStorage.getItem('token');
+    const response = await fetch(`${API_BASE_URL}/salas`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ nombreSala, cantidadAsientos, cantidadFilas, maxAsientosPorFila }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Error al crear la sala');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error en createSala:', error);
+    throw error;
+  }
+};
+
+// Eliminar una sala por ID
+export const deleteSala = async (idSala: number) => {
+  try {
+    const token = await AsyncStorage.getItem('token');
+    const response = await fetch(`${API_BASE_URL}/salas/${idSala}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Error al eliminar la sala');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error en deleteSala:', error);
+    throw error;
+  }
+};

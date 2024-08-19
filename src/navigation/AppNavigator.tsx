@@ -19,6 +19,7 @@ import AdminRegistrationScreen from '../screens/admin/AdminRegistrationScreen';
 import EditMovieScreen from '../screens/admin/EditMovieScreen';
 import LogsScreen from '../screens/admin/LogsScreen';
 import ContactoMsjScreen from '../screens/admin/ContactoMsjScreen';
+import SalaManagementScreen from '../screens/admin/SalaManagementScreen';
 
 export type RootStackParamList = {
   Home: undefined;
@@ -39,6 +40,7 @@ export type RootStackParamList = {
   EditMovie: { movieId: string; nombrePelicula: string; descripcion: string; fechaDeEmision: string; horaProgramada: string; turno: string; }; // Pantalla para editar películas
   Logs: undefined; 
   ContactoMsj: undefined; 
+  SalaManagement: undefined; 
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -65,6 +67,7 @@ const AppNavigator: React.FC = () => {
         <Stack.Screen name="EditMovie" component={EditMovieScreen} />
         <Stack.Screen name="Logs" component={LogsScreen} />
         <Stack.Screen name="ContactoMsj" component={ContactoMsjScreen} />
+        <Stack.Screen name="SalaManagement" component={SalaManagementScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

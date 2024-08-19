@@ -10,6 +10,7 @@ const MovieFormScreen = ({ navigation }) => {
   const [duracionPelicula, setDuracionPelicula] = useState('');
   const [actoresPelicula, setActoresPelicula] = useState('');
   const [clasificacionPelicula, setClasificacionPelicula] = useState('');
+  const [descripcionPelicula, setDescripcionPelicula] = useState('');
   const [precioBoleto, setPrecioBoleto] = useState('');
   const [imagenPelicula, setImagenPelicula] = useState(null); // Nuevo estado para manejar la imagen
 
@@ -35,6 +36,7 @@ const MovieFormScreen = ({ navigation }) => {
       formData.append('duracionPelicula', duracionPelicula);
       formData.append('actoresPelicula', actoresPelicula);
       formData.append('clasificacionPelicula', clasificacionPelicula);
+      formData.append('descripcionPelicula', descripcionPelicula);
       formData.append('precioBoleto', precioBoleto);
 
       if (imagenPelicula) {
@@ -91,6 +93,13 @@ const MovieFormScreen = ({ navigation }) => {
         placeholder="Clasificación"
         value={clasificacionPelicula}
         onChangeText={setClasificacionPelicula}
+      />
+
+      <TextInput
+        style={styles.input}
+        placeholder="Descripción"
+        value={descripcionPelicula}
+        onChangeText={setDescripcionPelicula}
       />
 
 
