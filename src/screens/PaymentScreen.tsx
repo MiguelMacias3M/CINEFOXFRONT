@@ -49,15 +49,33 @@ const PaymentScreen: React.FC<Props> = ({ route, navigation }) => {
     return true;
   };
 
+  const handleCardNumberChange = (text: string) => {
+    const formattedText = text.replace(/\D/g, ''); // Elimina todo lo que no sea dígito
+    if (formattedText.length <= 16) {
+      setCardNumber(formattedText);
+    }
+  };
+
+  const handleExpiryDateChange = (text: string) => {
+    let formattedText = text.replace(/\D/g, ''); // Elimina todo lo que no sea dígito
+    if (formattedText.length > 4) {
+      formattedText = formattedText.slice(0, 4); // Limita a 4 caracteres
+    }
+    if (formattedText.length > 2) {
+      formattedText = `${formattedText.slice(0, 2)}/${formattedText.slice(2)}`; // Inserta "/"
+    }
+    setExpiryDate(formattedText);
+  };
+
   const handlePayment = () => {
     if (validateInputs()) {
-      // Aquí puedes manejar la lógica de procesamiento de pagos
-      console.log('Card Number:', cardNumber);
-      console.log('Expiry Date:', expiryDate);
-      console.log('CVV:', cvv);
-      console.log('Cardholder Name:', cardholderName);
       Alert.alert('Éxito', 'Pago realizado con éxito');
-      navigation.navigate('Home');
+      navigation.navigate('QrCodeScreen', { 
+        asiento: seats.join(', '), 
+        sala: 'Sala 1',
+        total: price, 
+        fecha: horario 
+      });
     }
   };
 
@@ -76,19 +94,21 @@ const PaymentScreen: React.FC<Props> = ({ route, navigation }) => {
           placeholder="Número de tarjeta"
           leftIcon={<Icon name="credit-card" size={20} color="#E50914" />}
           value={cardNumber}
-          onChangeText={setCardNumber}
+          onChangeText={handleCardNumberChange}
           keyboardType="numeric"
           containerStyle={styles.inputContainer}
           inputStyle={styles.input}
+          maxLength={16} // Máximo de 16 caracteres
         />
         <Input
           placeholder="Fecha de expiración (MM/AA)"
           leftIcon={<Icon name="calendar" size={20} color="#E50914" />}
           value={expiryDate}
-          onChangeText={setExpiryDate}
+          onChangeText={handleExpiryDateChange}
           keyboardType="numeric"
           containerStyle={styles.inputContainer}
           inputStyle={styles.input}
+          maxLength={5} // Máximo de 5 caracteres para el formato MM/AA
         />
         <Input
           placeholder="CVV"
@@ -99,6 +119,7 @@ const PaymentScreen: React.FC<Props> = ({ route, navigation }) => {
           secureTextEntry
           containerStyle={styles.inputContainer}
           inputStyle={styles.input}
+          maxLength={3} // CVV usualmente tiene 3 dígitos
         />
         <Input
           placeholder="Nombre del titular"
@@ -167,7 +188,7 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 20,
     borderRadius: 5,
-    width: '100%', // Ajustar para que los botones ocupen el mismo ancho
+    width: '100%',
   },
   cancelButton: {
     backgroundColor: '#888',
