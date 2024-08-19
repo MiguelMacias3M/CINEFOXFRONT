@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Alert, Modal } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
-import { getAsientosBySala, updateAsientos } from '../apiService'; // Asegúrate de tener la función updateAsientos
+import { getAsientosBySala, updateAsientos } from '../apiService';
 import { RootStackParamList } from '../navigation/AppNavigator';
 
 type SeatSelectionScreenNavigationProp = StackNavigationProp<RootStackParamList, 'SeatSelection'>;
@@ -22,13 +22,9 @@ const SeatSelectionScreen: React.FC<Props> = ({ route, navigation }) => {
   useEffect(() => {
     const fetchAsientos = async () => {
       try {
-        console.log("Iniciando fetchAsientosBySala...");
         const asientos = await getAsientosBySala(idSala);
-        console.log("Asientos recibidos:", asientos);
-
         setAvailableSeats(asientos);
       } catch (error) {
-        console.error("Error al obtener los asientos:", error);
         Alert.alert('Error', 'No se pudieron cargar los asientos');
       }
     };
@@ -65,13 +61,9 @@ const SeatSelectionScreen: React.FC<Props> = ({ route, navigation }) => {
         };
       });
 
-      console.log("Enviando asientos para actualizar:", asientosParaActualizar);
       await updateAsientos(asientosParaActualizar);
-
-      Alert.alert('Éxito', 'Asientos actualizados correctamente');
       setModalVisible(true);
     } catch (error) {
-      console.error("Error al actualizar los asientos:", error);
       Alert.alert('Error', 'No se pudieron actualizar los asientos');
     }
   };
@@ -113,6 +105,20 @@ const SeatSelectionScreen: React.FC<Props> = ({ route, navigation }) => {
       </View>
       <Text style={styles.selectedSeatsText}>Asientos seleccionados: {selectedSeats.length}/{tickets}</Text>
       <Text style={styles.selectedSeatsList}>Asientos: {selectedSeats.join(', ')}</Text>
+      <View style={styles.legendContainer}>
+        <View style={styles.legendItem}>
+          <Image source={require('../assets/asientoRojo.png')} style={styles.legendImage} />
+          <Text style={styles.legendText}>Apartado</Text>
+        </View>
+        <View style={styles.legendItem}>
+          <Image source={require('../assets/asientoAnaranjado.png')} style={styles.legendImage} />
+          <Text style={styles.legendText}>Seleccionado</Text>
+        </View>
+        <View style={styles.legendItem}>
+          <Image source={require('../assets/asientoBlanco.png')} style={styles.legendImage} />
+          <Text style={styles.legendText}>Disponible</Text>
+        </View>
+      </View>
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={handleConfirm}>
           <Text style={styles.buttonText}>Confirmar</Text>
@@ -214,6 +220,26 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#FFFFFF',
     marginTop: 10,
+  },
+  legendContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+  legendItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: 10,
+  },
+  legendImage: {
+    width: 20,
+    height: 20,
+    marginRight: 5,
+  },
+  legendText: {
+    color: '#FFFFFF',
+    fontSize: 16,
   },
   buttonContainer: {
     flexDirection: 'row',

@@ -14,13 +14,27 @@ const LoginScreen = () => {
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation<LoginScreenNavigationProp>();
 
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const handleLogin = async () => {
+    if (!correoUsuario || !contrasenaUsuario) {
+      Alert.alert('Error', 'Por favor, complete todos los campos.');
+      return;
+    }
+
+    if (!validateEmail(correoUsuario)) {
+      Alert.alert('Error', 'Por favor, ingrese un correo electrónico válido.');
+      return;
+    }
+
     setLoading(true);
     try {
       const { decoded, token } = await loginUsuario(correoUsuario, contrasenaUsuario);
       console.log('Datos del usuario:', decoded);
   
-      // Puedes utilizar decoded.tipo (u otro campo) según sea necesario
       if (decoded.tipo === 'admin') {
         navigation.navigate('AdminWelcome', { adminName: decoded.nombre });
       } else {

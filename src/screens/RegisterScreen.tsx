@@ -3,7 +3,7 @@ import { View, StyleSheet, ScrollView, Image, Alert } from 'react-native';
 import { Input, Button, Text } from 'react-native-elements';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
-import { registerUsuarioCliente } from '../apiService'; // Importa la función correcta
+import { registerUsuarioCliente } from '../apiService';
 
 type RegisterScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Register'>;
 
@@ -95,6 +95,20 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
     }
   };
 
+  const handleAgeChange = (text: string) => {
+    const formattedText = text.replace(/\D/g, ''); // Solo permite dígitos
+    if (formattedText.length <= 2) {
+      setAge(formattedText);
+    }
+  };
+
+  const handlePhoneChange = (text: string) => {
+    const formattedText = text.replace(/\D/g, ''); // Solo permite dígitos
+    if (formattedText.length <= 10) {
+      setPhone(formattedText);
+    }
+  };
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Registro en CINE-FOX</Text>
@@ -118,10 +132,11 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
         placeholder="Edad"
         leftIcon={<Image source={require('../assets/icons/calendar.png')} style={styles.icon} />}
         value={age}
-        onChangeText={setAge}
+        onChangeText={handleAgeChange}
         keyboardType="numeric"
         containerStyle={styles.inputContainer}
         inputStyle={styles.input}
+        maxLength={2} // Limitar la entrada a 2 dígitos
       />
       <Input
         placeholder="Correo electrónico"
@@ -137,10 +152,11 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
         placeholder="Teléfono"
         leftIcon={<Image source={require('../assets/icons/phone.png')} style={styles.icon} />}
         value={phone}
-        onChangeText={setPhone}
+        onChangeText={handlePhoneChange}
         keyboardType="phone-pad"
         containerStyle={styles.inputContainer}
         inputStyle={styles.input}
+        maxLength={10} // Limitar la entrada a 10 dígitos
       />
       <Input
         placeholder="Contraseña"

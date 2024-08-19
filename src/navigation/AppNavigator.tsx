@@ -21,6 +21,7 @@ import LogsScreen from '../screens/admin/LogsScreen';
 import ContactoMsjScreen from '../screens/admin/ContactoMsjScreen';
 import SalaManagementScreen from '../screens/admin/SalaManagementScreen';
 import SoporteScreen from '../screens/admin/SoporteScreen';
+import QrCodeScreen from '../screens/QrCodeScreen '; // Asegúrate de ajustar la ruta según donde coloques el archivo
 
 export type RootStackParamList = {
   Home: undefined;
@@ -36,13 +37,14 @@ export type RootStackParamList = {
   MovieManagement: undefined;
   AssignMovieToRoom: { movieId: string; };
   SetRoomSchedule: { movieId: string; roomId: string; };
-  MovieForm: undefined; // Pantalla para agregar nuevas películas
-  AdminRegistration: undefined; // Pantalla para registrar administradores
-  EditMovie: { movieId: string; nombrePelicula: string; descripcion: string; fechaDeEmision: string; horaProgramada: string; turno: string; }; // Pantalla para editar películas
-  Logs: undefined; 
-  ContactoMsj: undefined; 
+  MovieForm: undefined;
+  AdminRegistration: undefined;
+  EditMovie: { movieId: string; nombrePelicula: string; descripcion: string; fechaDeEmision: string; horaProgramada: string; turno: string; };
+  Logs: undefined;
+  ContactoMsj: undefined;
   SalaManagement: undefined; 
   Soporte: undefined; 
+  QrCodeScreen: { asiento: string; sala: string; total: number; fecha: string; }; // Parámetros para el QR
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -71,6 +73,7 @@ const AppNavigator: React.FC = () => {
         <Stack.Screen name="ContactoMsj" component={ContactoMsjScreen} />
         <Stack.Screen name="SalaManagement" component={SalaManagementScreen} />
         <Stack.Screen name="Soporte" component={SoporteScreen} />
+        <Stack.Screen name="QrCodeScreen" component={QrCodeScreen} /> 
       </Stack.Navigator>
     </NavigationContainer>
   );
