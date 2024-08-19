@@ -1,29 +1,25 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, Alert, StyleSheet, Image } from 'react-native';
+import { View, Text, Alert, StyleSheet, Image, ScrollView } from 'react-native';
+import { Input, Button } from 'react-native-elements';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { createMovie } from '../../apiService';
-import { Picker } from '@react-native-picker/picker';
 
-// Función para sanitizar texto
 const sanitizeText = (text) => {
-  return text.replace(/<[^>]*>/g, '').trim(); // Elimina etiquetas HTML y espacios en blanco
+  return text.replace(/<[^>]*>/g, '').trim();
 };
 
-// Función para sanitizar y validar precio
 const sanitizeAndValidatePrice = (price) => {
   const sanitizedPrice = parseFloat(price);
   return isNaN(sanitizedPrice) || sanitizedPrice <= 0 ? '' : sanitizedPrice.toFixed(2);
 };
 
-// Función para sanitizar y validar duración
 const sanitizeAndValidateDuration = (duration) => {
   const sanitizedDuration = parseFloat(duration);
   return isNaN(sanitizedDuration) || sanitizedDuration <= 0 ? '' : sanitizedDuration;
 };
 
-// Función para validar clasificación
 const validateClassification = (classification) => {
-  const validClassifications = ['G', 'PG', 'PG-13', 'R', 'NC-17']; // Clasificaciones válidas
+  const validClassifications = ['G', 'PG', 'PG-13', 'R', 'NC-17'];
   const sanitizedClassification = sanitizeText(classification).toUpperCase();
   return validClassifications.includes(sanitizedClassification) ? sanitizedClassification : '';
 };
@@ -54,7 +50,6 @@ const MovieFormScreen = ({ navigation }) => {
   };
 
   const validateInputs = () => {
-    // Sanitización y validación de datos de texto
     const sanitizedNombre = sanitizeText(nombrePelicula);
     const sanitizedDirector = sanitizeText(directorPelicula);
     const sanitizedActores = sanitizeText(actoresPelicula);
@@ -63,9 +58,8 @@ const MovieFormScreen = ({ navigation }) => {
     const sanitizedDuracion = sanitizeAndValidateDuration(duracionPelicula);
     const sanitizedPrecio = sanitizeAndValidatePrice(precioBoleto);
 
-    // Validación de datos de texto
     if (!sanitizedNombre || !sanitizedDirector || !sanitizedActores ||
-        !sanitizedDescripcion || !sanitizedClasificacion || !sanitizedDuracion || !sanitizedPrecio) {
+      !sanitizedDescripcion || !sanitizedClasificacion || !sanitizedDuracion || !sanitizedPrecio) {
       Alert.alert('Error', 'Por favor, complete todos los campos requeridos con datos válidos.');
       return false;
     }
@@ -77,7 +71,6 @@ const MovieFormScreen = ({ navigation }) => {
       setErrorClasificacion('');
     }
 
-    // Actualizar estados con datos sanitizados
     setNombrePelicula(sanitizedNombre);
     setDirectorPelicula(sanitizedDirector);
     setActoresPelicula(sanitizedActores);
@@ -112,73 +105,80 @@ const MovieFormScreen = ({ navigation }) => {
 
       await createMovie(formData);
       Alert.alert('Éxito', 'Película creada correctamente');
-      navigation.goBack(); // Vuelve a la pantalla anterior después de crear la película
+      navigation.goBack();
     } catch (error) {
       Alert.alert('Error', 'No se pudo crear la película');
     }
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Crear Película</Text>
 
-      <TextInput
-        style={styles.input}
+      <Input
         placeholder="Nombre de la Película"
         value={nombrePelicula}
         onChangeText={setNombrePelicula}
+        containerStyle={styles.inputContainer}
+        inputStyle={styles.input}
       />
 
-      <TextInput
-        style={styles.input}
+      <Input
         placeholder="Director"
         value={directorPelicula}
         onChangeText={setDirectorPelicula}
+        containerStyle={styles.inputContainer}
+        inputStyle={styles.input}
       />
 
-      <TextInput
-        style={styles.input}
+      <Input
         placeholder="Duración (minutos)"
         value={duracionPelicula}
         onChangeText={setDuracionPelicula}
         keyboardType="numeric"
+        containerStyle={styles.inputContainer}
+        inputStyle={styles.input}
       />
 
-      <TextInput
-        style={styles.input}
+      <Input
         placeholder="Actores"
         value={actoresPelicula}
         onChangeText={setActoresPelicula}
+        containerStyle={styles.inputContainer}
+        inputStyle={styles.input}
       />
 
-      <TextInput
-        style={styles.input}
+      <Input
         placeholder="Clasificación"
         value={clasificacionPelicula}
         onChangeText={setClasificacionPelicula}
+        containerStyle={styles.inputContainer}
+        inputStyle={styles.input}
+        errorMessage={errorClasificacion || 'Clasificaciones permitidas: G, PG, PG-13, R, NC-17'}
       />
-      {errorClasificacion ? (
-        <Text style={styles.errorText}>{errorClasificacion}</Text>
-      ) : (
-        <Text style={styles.infoText}>Clasificaciones permitidas: G, PG, PG-13, R, NC-17</Text>
-      )}
 
-      <TextInput
-        style={styles.input}
+      <Input
         placeholder="Descripción"
         value={descripcionPelicula}
         onChangeText={setDescripcionPelicula}
+        containerStyle={styles.inputContainer}
+        inputStyle={styles.input}
       />
 
-      <TextInput
-        style={styles.input}
+      <Input
         placeholder="Precio del Boleto"
         value={precioBoleto}
         onChangeText={setPrecioBoleto}
         keyboardType="numeric"
+        containerStyle={styles.inputContainer}
+        inputStyle={styles.input}
       />
 
-      <Button title="Seleccionar Imagen" onPress={handleImagePick} />
+      <Button
+        title="Seleccionar Imagen"
+        onPress={handleImagePick}
+        buttonStyle={styles.imageButton}
+      />
       {imagenPelicula && (
         <Image
           source={{ uri: imagenPelicula.uri }}
@@ -186,41 +186,60 @@ const MovieFormScreen = ({ navigation }) => {
         />
       )}
 
-      <Button title="Crear Película" onPress={handleSubmit} />
-    </View>
+      <Button
+        title="Crear Película"
+        onPress={handleSubmit}
+        buttonStyle={styles.submitButton}
+        titleStyle={styles.submitButtonText} // Asegúrate de que el texto esté centrado
+      />
+
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
+  submitButton: {
+    backgroundColor: '#E50914',
+    paddingVertical: 15,
+    width: '100%',
+    justifyContent: 'center', // Centra el contenido verticalmente
+    alignItems: 'center', // Centra el contenido horizontalmente
+  },
+  submitButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center', // Asegura que el texto esté centrado
+    width: '100%', // Hace que el texto ocupe todo el ancho del botón
+  },
   container: {
-    flex: 1,
+    flexGrow: 1,
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: '#f0f0f0',
+    alignItems: 'center',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
+    color: '#E50914',
+  },
+  inputContainer: {
+    width: '100%',
+    marginBottom: 15,
   },
   input: {
-    borderColor: '#ccc',
-    borderWidth: 1,
-    padding: 10,
-    marginBottom: 15,
-    borderRadius: 5,
+    paddingLeft: 10,
   },
   image: {
-    width: 100,
-    height: 100,
+    width: 150,
+    height: 150,
     resizeMode: 'cover',
     marginVertical: 10,
+    borderRadius: 10,
   },
-  errorText: {
-    color: 'red',
-    marginBottom: 15,
-  },
-  infoText: {
-    color: 'blue',
+  imageButton: {
+    backgroundColor: '#E50914',
     marginBottom: 15,
   },
 });

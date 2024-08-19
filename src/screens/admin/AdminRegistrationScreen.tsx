@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, Image, Alert, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, ScrollView, Image, Alert, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { Input, Button, Text } from 'react-native-elements';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../navigation/AppNavigator';
@@ -14,6 +14,7 @@ const AdminRegistrationScreen: React.FC<{ navigation: AdminRegistrationScreenNav
   const [correoUsuario, setCorreoUsuario] = useState('');
   const [telefonoUsuario, setTelefonoUsuario] = useState('');
   const [contrasenaUsuario, setContrasenaUsuario] = useState('');
+  const [passwordVisible, setPasswordVisible] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const validateEmail = (email: string) => {
@@ -162,7 +163,19 @@ const AdminRegistrationScreen: React.FC<{ navigation: AdminRegistrationScreenNav
         onChangeText={setContrasenaUsuario}
         containerStyle={styles.inputContainer}
         inputStyle={styles.input}
-        secureTextEntry
+        secureTextEntry={!passwordVisible}
+        rightIcon={
+          <TouchableOpacity onPress={() => setPasswordVisible(!passwordVisible)}>
+            <Image
+              source={
+                passwordVisible
+                  ? require('../../assets/icons/eye-open.png')
+                  : require('../../assets/icons/eye-closed.png')
+              }
+              style={styles.icon}
+            />
+          </TouchableOpacity>
+        }
       />
       {loading ? (
         <ActivityIndicator size="large" color="#E50914" />
