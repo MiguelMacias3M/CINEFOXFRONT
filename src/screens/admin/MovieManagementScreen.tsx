@@ -132,7 +132,7 @@ const MovieManagementScreen: React.FC<Props> = ({ navigation }) => {
       <Button
         title="Agregar Nueva Película"
         onPress={handleAddMovie}
-        color="#E50914"
+        color="#ff8100"
       />
     </View>
   );

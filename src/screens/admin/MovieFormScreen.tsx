@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   imageButton: {
-    backgroundColor: '#E50914',
+    backgroundColor: '#4995e8',
     marginBottom: 15,
   },
 });

@@ -93,7 +93,10 @@ const CarteleraScreen = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.welcomeSubtitle}>Bienvenido a la cartelera de Cine-Fox</Text>
+      <View style={styles.header}>
+        <Text style={styles.title}>Cartelera</Text>
+        
+      </View>
       <FlatList
         horizontal
         data={['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']}
@@ -107,7 +110,7 @@ const CarteleraScreen = () => {
         <FlatList
           data={movies}
           renderItem={renderMovieItem}
-          keyExtractor={(item, index) => item.pelicula.nombrePelicula + '-' + index} // Se usa una combinación única
+          keyExtractor={(item, index) => item.pelicula.nombrePelicula + '-' + index}
           contentContainerStyle={styles.moviesContainer}
         />
       ) : (
@@ -121,11 +124,30 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     padding: 20,
-    backgroundColor: '#1A3C58', // Color de fondo principal azul oscuro
+    backgroundColor: '#1A3C58',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    flex: 1,
+    textAlign: 'center',
+  },
+  logo: {
+    width: 40,
+    height: 40,
+    borderRadius: 20, // Hace que la imagen sea redonda
+    marginLeft: 10,
   },
   submenu: {
     marginBottom: 10,
-    backgroundColor: '#2B4F70', // Fondo más oscuro para la barra de días
+    backgroundColor: '#2B4F70',
     paddingVertical: 10,
     borderRadius: 10,
     shadowColor: '#000',
@@ -138,25 +160,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     paddingVertical: 10,
     paddingHorizontal: 15,
-    color: '#E5E5E5', // Color de texto neutro claro
+    color: '#E5E5E5',
   },
   selectedSubmenuItem: {
     fontWeight: 'bold',
-    color: '#FFFFFF', // Texto blanco para el día seleccionado
-    backgroundColor: '#41698A', // Fondo azul medio para el día seleccionado
+    color: '#FFFFFF',
+    backgroundColor: '#41698A',
     borderRadius: 5,
-  },
-  welcomeSubtitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    color: '#FFFFFF', // Color del texto blanco
   },
   subtitle: {
     fontSize: 18,
     fontWeight: '600',
     marginVertical: 15,
-    color: '#E5E5E5', // Color del texto en subtítulos
+    color: '#E5E5E5',
   },
   card: {
     marginBottom: 20,
@@ -164,7 +180,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#315470',
     borderRadius: 10,
-    backgroundColor: '#2B4F70', // Fondo de las tarjetas en azul oscuro
+    backgroundColor: '#2B4F70',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
@@ -180,7 +196,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#888',
     fontSize: 16,
-    paddingVertical: 50, // Padding extra para simular espacio de imagen
+    paddingVertical: 50,
   },
   movieInfo: {
     marginTop: 10,
@@ -188,11 +204,11 @@ const styles = StyleSheet.create({
   movieTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#FFFFFF', // Texto blanco para el título
+    color: '#FFFFFF',
   },
   movieDescription: {
     fontSize: 14,
-    color: '#E5E5E5', // Texto más claro para la descripción
+    color: '#E5E5E5',
   },
   moviesContainer: {
     flexGrow: 1,
@@ -200,7 +216,7 @@ const styles = StyleSheet.create({
   noMoviesText: {
     textAlign: 'center',
     fontSize: 16,
-    color: '#E5E5E5', // Texto neutro claro para no hay películas
+    color: '#E5E5E5',
   },
 });
 
