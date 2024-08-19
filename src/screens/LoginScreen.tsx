@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Image, ScrollView, Alert, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, Image, ScrollView, Alert, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { Input, Button, Text } from 'react-native-elements';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
@@ -12,16 +12,12 @@ const LoginScreen = () => {
   const [correoUsuario, setCorreoUsuario] = useState('');
   const [contrasenaUsuario, setContrasenaUsuario] = useState('');
   const [loading, setLoading] = useState(false);
+  const [passwordVisible, setPasswordVisible] = useState(false);
   const navigation = useNavigation<LoginScreenNavigationProp>();
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
-  };
-
-  const validatePassword = (password: string) => {
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{10,}$/;
-    return passwordRegex.test(password);
   };
 
   const sanitizeInput = (input: string) => {
@@ -30,7 +26,7 @@ const LoginScreen = () => {
 
   const handleLogin = async () => {
     const sanitizedCorreo = sanitizeInput(correoUsuario.trim());
-    const sanitizedPassword = sanitizeInput(contrasenaUsuario.trim()); // Not needed for password, but included for consistency
+    const sanitizedPassword = contrasenaUsuario.trim(); // No se aplica sanitización a la contraseña
 
     if (!sanitizedCorreo || !sanitizedPassword) {
       Alert.alert('Error', 'Por favor, complete todos los campos.');
@@ -39,11 +35,6 @@ const LoginScreen = () => {
 
     if (!validateEmail(sanitizedCorreo)) {
       Alert.alert('Error', 'Por favor, ingrese un correo electrónico válido.');
-      return;
-    }
-
-    if (!validatePassword(sanitizedPassword)) {
-      Alert.alert('Error', 'La contraseña debe tener al menos 10 caracteres e incluir mayúsculas, minúsculas, números y caracteres especiales.');
       return;
     }
 
@@ -88,7 +79,19 @@ const LoginScreen = () => {
         onChangeText={setContrasenaUsuario}
         containerStyle={styles.inputContainer}
         inputStyle={styles.input}
-        secureTextEntry
+        secureTextEntry={!passwordVisible}
+        rightIcon={
+          <TouchableOpacity onPress={() => setPasswordVisible(!passwordVisible)}>
+            <Image
+              source={
+                passwordVisible
+                  ? require('../assets/icons/eye-open.png')
+                  : require('../assets/icons/eye-closed.png')
+              }
+              style={styles.icon}
+            />
+          </TouchableOpacity>
+        }
       />
       {loading ? (
         <ActivityIndicator size="large" color="#E50914" />

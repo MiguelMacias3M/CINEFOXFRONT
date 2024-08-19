@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, Image, Alert } from 'react-native';
+import { View, StyleSheet, ScrollView, Image, Alert, TouchableOpacity } from 'react-native';
 import { Input, Button, Text } from 'react-native-elements';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
@@ -18,6 +18,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
+  const [passwordVisible, setPasswordVisible] = useState(false);
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -165,7 +166,19 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
         onChangeText={setPassword}
         containerStyle={styles.inputContainer}
         inputStyle={styles.input}
-        secureTextEntry
+        secureTextEntry={!passwordVisible}
+        rightIcon={
+          <TouchableOpacity onPress={() => setPasswordVisible(!passwordVisible)}>
+            <Image
+              source={
+                passwordVisible
+                  ? require('../assets/icons/eye-open.png')
+                  : require('../assets/icons/eye-closed.png')
+              }
+              style={styles.icon}
+            />
+          </TouchableOpacity>
+        }
       />
       <Button
         title="Registrarse"
