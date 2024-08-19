@@ -19,20 +19,37 @@ const LoginScreen = () => {
     return emailRegex.test(email);
   };
 
+  const validatePassword = (password: string) => {
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{10,}$/;
+    return passwordRegex.test(password);
+  };
+
+  const sanitizeInput = (input: string) => {
+    return input.replace(/[^a-zA-Z0-9@.\s]/g, '');
+  };
+
   const handleLogin = async () => {
-    if (!correoUsuario || !contrasenaUsuario) {
+    const sanitizedCorreo = sanitizeInput(correoUsuario.trim());
+    const sanitizedPassword = sanitizeInput(contrasenaUsuario.trim()); // Not needed for password, but included for consistency
+
+    if (!sanitizedCorreo || !sanitizedPassword) {
       Alert.alert('Error', 'Por favor, complete todos los campos.');
       return;
     }
 
-    if (!validateEmail(correoUsuario)) {
+    if (!validateEmail(sanitizedCorreo)) {
       Alert.alert('Error', 'Por favor, ingrese un correo electrónico válido.');
+      return;
+    }
+
+    if (!validatePassword(sanitizedPassword)) {
+      Alert.alert('Error', 'La contraseña debe tener al menos 10 caracteres e incluir mayúsculas, minúsculas, números y caracteres especiales.');
       return;
     }
 
     setLoading(true);
     try {
-      const { decoded, token } = await loginUsuario(correoUsuario, contrasenaUsuario);
+      const { decoded, token } = await loginUsuario(sanitizedCorreo, sanitizedPassword);
       console.log('Datos del usuario:', decoded);
   
       if (decoded.tipo === 'admin') {
