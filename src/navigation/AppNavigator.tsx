@@ -20,6 +20,7 @@ import EditMovieScreen from '../screens/admin/EditMovieScreen';
 import LogsScreen from '../screens/admin/LogsScreen';
 import ContactoMsjScreen from '../screens/admin/ContactoMsjScreen';
 import SalaManagementScreen from '../screens/admin/SalaManagementScreen';
+import SoporteScreen from '../screens/admin/SoporteScreen';
 
 export type RootStackParamList = {
   Home: undefined;
@@ -41,6 +42,7 @@ export type RootStackParamList = {
   Logs: undefined; 
   ContactoMsj: undefined; 
   SalaManagement: undefined; 
+  Soporte: undefined; 
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -68,6 +70,7 @@ const AppNavigator: React.FC = () => {
         <Stack.Screen name="Logs" component={LogsScreen} />
         <Stack.Screen name="ContactoMsj" component={ContactoMsjScreen} />
         <Stack.Screen name="SalaManagement" component={SalaManagementScreen} />
+        <Stack.Screen name="Soporte" component={SoporteScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
